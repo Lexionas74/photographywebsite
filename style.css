@@ -47,12 +47,21 @@ body {
     cursor: pointer;
   }
   .portfoilo-button {
-    background-color: transparent;
+    background-color: black;
     color: #FFFFFF;
     font-size: 18px;
+    text-decoration: none;
+  }
+  
+  .home-portfoilo-button {
+    background-color: rgb(142, 109, 109);
+    color: #FFFFFF;
+    font-size: 18px;
+    text-decoration: none;
   }
   .accent-button {
-    background-color:transparent;
-    color: #EA5458;
+    background-color:black;
+    color: white;
     font-size: 16px;
+    text-decoration: none;
   }
