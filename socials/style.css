@@ -58,14 +58,18 @@ body {
     font-size: 16px;
     text-decoration: none;
   }
-  .instagram-button {
-    background-color: transparent;
-    color: #EA5458;
-    font-size: 16px;
+  .fa {
+    padding: 20px;
+    font-size: 30px;
+    width: 100px;
+    text-align: center;
     text-decoration: none;
-    url: "https://www.instagram.com/stuartclarkson.photography?igsh=MWZrOWJqZzFiODVvcg==";
+    border-radius: 75px;
   }
-  .instagram.button:hover {
-    background-color: #04AA6D; /* Green */
-    color: white;
+  .fa:hover {
+    opacity: 0.7;
+  }
+  .fa-instagram {
+      background: linear-gradient(180deg, #515BD4 10%, #8134AF 100%, #DD2A7B 100%);
+      color: white;
   }
