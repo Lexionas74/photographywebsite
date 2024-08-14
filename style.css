@@ -9,6 +9,11 @@ body {
     text-align: center;
     padding: 50px;
   }
+  h5{
+    margin: 50;
+    padding-left: 75px;
+    font-size: 30px;
+  }
   .header h1 {
     margin: 0;
     font-size: 36px;
@@ -62,6 +67,6 @@ body {
   .accent-button {
     background-color:black;
     color: white;
-    font-size: 16px;
+    font-size: 18px;
     text-decoration: none;
   }
