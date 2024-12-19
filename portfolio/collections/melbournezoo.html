@@ -13,8 +13,16 @@
       font-family: 'Poppins', sans-serif;
     }
     .card {
-      width: 100%; 
+      width: full; 
     }
+    #modalImage {
+    max-width: 80%; /* Adjusts width to fit within the screen */
+    max-height: 80%; /* Ensures image doesn't overflow vertically */
+    object-fit: contain; /* Preserves the image's aspect ratio */
+    aspect-ratio: 3/2; /* Optional: Forces a consistent aspect ratio */
+    width: auto; /* Adjusts to fit the container */
+    height: auto; /* Adjusts to fit the container */
+  }
   </style>
 </head>
 <body class="bg-gradient-to-r from-gray-900 via-purple-900 to-gray-900 text-white">
@@ -32,33 +40,60 @@
   <!-- Main Content -->
   <br>
   <center><p class="text-2xl font-bold">Melbourne Zoo</p></center>
-    <p class="flex justify-between items-center p-5">At the start of 2024, I went to the Melbourne Zoo with one of my friends. This was one of my first outings with my new body. Unfortunately, I only had the one lens at the time, and its reach was nowhere near enough for wildlife photography. I'd love to go back and rephotograph the zoo with my new lens. The lack of reach from my 18-45mm kit lens didn't ruin the fun, and I still got some amazing photos!</p>
+    <center><p class="py-5"><strong>Gear Used</strong><br>Camera: Canon EOS R50 <br>Lens: Canon RF-S 18-45 f4.5-6.3 </f4-5></p></center>
   <main class="flex justify-center items-center min-h-screen">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 p-10 max-w-7xl">
       <!-- Card 1 -->
-      <div class="bg-gray-800 rounded-xl overflow-hidden transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card">
+      <div class="bg-gray-800 rounded-xl overflow-hidden transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card" data-src="images/sjcphotography-8.jpg">
         <img src="images/sjcphotography-8.jpg" alt="aus gp 2024" class="w-full h-96 object-cover">
       </div>
       
       <!-- Card 2 -->
-      <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card">
+      <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"data-src="images/sjcphotography-10.jpg">
         <img src="images/sjcphotography-10.jpg" width="1000" alt="ausgp2024" class="w-full h-96 object-cover">
 
       </div>
 
       <!-- Card 3 -->
-      <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card">
+      <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card" data-src="images/sjcphotography-14.jpg">
         <img src="images/sjcphotography-14.jpg" alt="zoo" class="w-full h-96 object-cover">
 
       </div>
     <!-- Card 4 -->
-      <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card">
+      <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"data-src="images/sjcphotography-17.jpg">
         <img src="images/sjcphotography-17.jpg" alt="car musuem" class="w-full h-96 object-cover">
+      
       </div>
 
     </div>
-
-
   </main>
+
+
+<div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+    <button onclick="closeModal()" class="absolute top-5 right-5 text-white text-3xl font-bold">&times;</button>
+    <img id="modalImage" src="" alt="Preview" class="max-w-1000px max-h-1000px rounded-lg shadow-lg">
+  </div>
+
+
+<script>
+  // Function to open modal and set image source
+  const cards = document.querySelectorAll('.card');
+  const modal = document.getElementById('imageModal');
+  const modalImage = document.getElementById('modalImage');
+
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      const imageSrc = card.getAttribute('data-src'); // Get the data-src attribute
+      modalImage.src = imageSrc; // Set the image source
+      modal.classList.remove('hidden'); // Show the modal
+    });
+  });
+
+  // Function to close modal
+  function closeModal() {
+    modal.classList.add('hidden'); // Hide the modal
+    modalImage.src = ''; // Clear the modal image
+  }
+</script>
 </body>
 </html>
