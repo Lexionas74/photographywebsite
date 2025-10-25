@@ -97,6 +97,11 @@
       const modal = document.getElementById('imageModal');
       const modalImage = document.getElementById('modalImage');
     
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+      closeModal(); // Close the modal
+    }
+});
       cards.forEach(card => {
         card.addEventListener('click', () => {
           const imageSrc = card.getAttribute('data-src'); // Get the data-src attribute
