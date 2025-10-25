@@ -89,11 +89,32 @@
         <img id="modalImage" src="" alt="Preview" class="max-w-1000px max-h-1000px rounded-lg shadow-lg">
       </div>
     <script>
-      // Function to open modal and set image source
-      const cards = document.querySelectorAll('.card');
-      const modal = document.getElementById('imageModal');
-      const modalImage = document.getElementById('modalImage');
-    
+    const cards = document.querySelectorAll('.card');
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const contentWrapper = document.getElementById('contentWrapper');
+
+ 
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        const imageSrc = card.getAttribute('data-src');
+        modalImage.src = imageSrc;
+        modal.classList.remove('hidden');
+        contentWrapper.classList.add('blur-lg'); 
+      });
+    });
+
+
+    function closeModal() {
+      modal.classList.add('hidden');
+      modalImage.src = '';
+      contentWrapper.classList.remove('blur-lg');
+      }
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+          closeModal();
+        }
+      });
       cards.forEach(card => {
         card.addEventListener('click', () => {
           const imageSrc = card.getAttribute('data-src'); // Get the data-src attribute

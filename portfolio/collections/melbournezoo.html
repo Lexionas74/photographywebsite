@@ -75,25 +75,46 @@
   </div>
 
 
-<script>
-  // Function to open modal and set image source
-  const cards = document.querySelectorAll('.card');
-  const modal = document.getElementById('imageModal');
-  const modalImage = document.getElementById('modalImage');
+    <script>
+    const cards = document.querySelectorAll('.card');
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const contentWrapper = document.getElementById('contentWrapper');
 
-  cards.forEach(card => {
-    card.addEventListener('click', () => {
-      const imageSrc = card.getAttribute('data-src'); // Get the data-src attribute
-      modalImage.src = imageSrc; // Set the image source
-      modal.classList.remove('hidden'); // Show the modal
+ 
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        const imageSrc = card.getAttribute('data-src');
+        modalImage.src = imageSrc;
+        modal.classList.remove('hidden');
+        contentWrapper.classList.add('blur-lg'); 
+      });
     });
-  });
 
-  // Function to close modal
-  function closeModal() {
-    modal.classList.add('hidden'); // Hide the modal
-    modalImage.src = ''; // Clear the modal image
-  }
-</script>
+
+    function closeModal() {
+      modal.classList.add('hidden');
+      modalImage.src = '';
+      contentWrapper.classList.remove('blur-lg');
+      }
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+          closeModal();
+        }
+      });
+      cards.forEach(card => {
+        card.addEventListener('click', () => {
+          const imageSrc = card.getAttribute('data-src'); // Get the data-src attribute
+          modalImage.src = imageSrc; // Set the image source
+          modal.classList.remove('hidden'); // Show the modal
+        });
+      });
+    
+      // Function to close modal
+      function closeModal() {
+        modal.classList.add('hidden'); // Hide the modal
+        modalImage.src = ''; // Clear the modal image
+      }
+    </script>
 </body>
 </html>
