@@ -9,10 +9,54 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Poppins', sans-serif; }
-    .active-filter { background-color: #9333ea; color: white; }
-    .fade { transition: opacity 0.4s ease-in-out; opacity: 1; }
-    .hidden-fade { opacity: 0; pointer-events: none; display: none; }
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .active-filter {
+      background-color: #9333ea;
+      color: white;
+    }
+
+    .year-group {
+      opacity: 1;
+      visibility: visible;
+      max-height: 5000px;
+      margin-top: 2rem;
+      transition:
+        opacity 0.5s ease,
+        visibility 0.5s ease,
+        max-height 0.5s ease,
+        margin 0.5s ease;
+    }
+
+    .year-group.hidden {
+      opacity: 0;
+      visibility: hidden;
+      max-height: 0;
+      margin: 0 !important;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .extra-item {
+      display: none;
+    }
+
+    .year-group.show-all .extra-item {
+      display: block;
+    }
+  .extra-item {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease, opacity 0.5s ease;
+  }
+
+  .year-group.show-all .extra-item {
+    max-height: 1000px; /* large enough to fit your content */
+    opacity: 1;
+  }
   </style>
 </head>
 
@@ -29,95 +73,111 @@
     </nav>
   </header>
 
-  <!-- Title -->
-  <div class="text-center my-10">
-    <h1 class="text-3xl font-bold">My Work</h1>
-  </div>
+  <!-- My Work -->
+  <section class="text-center mt-10">
+    <h1 class="text-3xl font-bold mb-5">My Work</h1>
+    <div class="flex justify-center gap-3">
+      <button class="filter-button active-filter bg-gray-700 px-4 py-2 rounded-lg" data-year="all">All</button>
+      <button class="filter-button bg-gray-700 px-4 py-2 rounded-lg" data-year="2024">2024</button>
+      <button class="filter-button bg-gray-700 px-4 py-2 rounded-lg" data-year="2025">2025</button>
+    </div>
+  </section>
 
-  <!-- Filter Buttons -->
-  <div class="flex justify-center space-x-4 mb-10">
-    <button class="filter-btn bg-gray-700 hover:bg-purple-500 px-4 py-2 rounded-lg transition active-filter" data-year="all">All</button>
-    <button class="filter-btn bg-gray-700 hover:bg-purple-500 px-4 py-2 rounded-lg transition" data-year="2024">2024</button>
-    <button class="filter-btn bg-gray-700 hover:bg-purple-500 px-4 py-2 rounded-lg transition" data-year="2025">2025</button>
-  </div>
+  <!-- Year Groups -->
+  <main class="max-w-7xl mx-auto p-10">
+    <!-- 2025 -->
+    <div class="year-group" data-year="2025">
+      <h2 class="text-2xl font-bold mb-4 border-b border-gray-600">2025</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
-  <!-- Portfolio Container -->
-  <main id="portfolioContainer" class="max-w-7xl mx-auto p-10 space-y-20">
-    <!-- 2025 Group -->
-    <section class="year-group fade" data-year="2025">
-      <h2 class="year-title text-3xl font-bold mb-6 border-b border-gray-600 pb-2">2025</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <a href="https://stuartclarksonphotography.com/portfolio/collections/gtwc2025.html"
-           class="portfolio-card bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300"
-           data-year="2025">
-          <img src="images/sjcphotography-119.jpg" alt="GT World Challenge 2025" class="w-full h-96 object-cover">
-          <div class="p-4"><p class="text-2xl font-bold">GT World Challenge 2025</p></div>
-        </a>
+        <div>
+          <a href="https://stuartclarksonphotography.com/portfolio/collections/gtwc2025.html">
+            <img src="images/sjcphotography-119.jpg" alt="GT World Challenge 2025" class="w-full h-96 object-cover rounded-xl">
+          </a>
+          <p class="text-xl font-bold mt-2">GT World Challenge 2025</p>
+        </div>
 
-        <a href="https://stuartclarksonphotography.com/portfolio/collections/ausgp2025.html"
-           class="portfolio-card bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300"
-           data-year="2025">
-          <img src="images/fdae46423f03d73273726a7bfcf2dbec_1727151868_3726_l.jpg" alt="Australian Grand Prix 2025" class="w-full h-96 object-cover">
-          <div class="p-4"><p class="text-2xl font-bold">Australian Grand Prix 2025</p></div>
-        </a>
+        <div>
+          <a href="https://stuartclarksonphotography.com/portfolio/collections/ausgp2025.html">
+            <img src="images/fdae46423f03d73273726a7bfcf2dbec_1727151868_3726_l.jpg" alt="Australian Grand Prix 2025" class="w-full h-96 object-cover rounded-xl">
+          </a>
+          <p class="text-xl font-bold mt-2">Australian Grand Prix 2025</p>
+        </div>
 
-        <a href="https://stuartclarksonphotography.com/portfolio/collections/alfass2025.html"
-           class="portfolio-card bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300"
-           data-year="2025">
-          <img src="images/images.jpg" alt="AROCA Supersprint 2025" class="w-full h-96 object-cover">
-          <div class="p-4"><p class="text-2xl font-bold">AROCA Supersprint Round 1 2025</p></div>
-        </a>
+        <div>
+          <a href="https://stuartclarksonphotography.com/portfolio/collections/alfass2025.html">
+            <img src="images/images.jpg" alt="AROCA Supersprint Round 1 2025" class="w-full h-96 object-cover rounded-xl">
+          </a>
+          <p class="text-xl font-bold mt-2">AROCA Supersprint Round 1 2025</p>
+        </div>
 
-        <a href="https://stuartclarksonphotography.com/portfolio/collections/alfass22025.html"
-           class="portfolio-card bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300"
-           data-year="2025">
-          <img src="images/images.jpg" alt="AROCA Supersprint 2 2025" class="w-full h-96 object-cover">
-          <div class="p-4"><p class="text-2xl font-bold">AROCA Supersprint Round 2 2025</p></div>
-        </a>
+        <!-- Hidden extras -->
+        <div class="extra-item">
+          <a href="https://stuartclarksonphotography.com/portfolio/collections/sandown3002025.html">
+            <img src="images/clublogo_og.jpg" alt="Sandown 300 2025" class="w-full h-96 object-cover rounded-xl">
+          </a>
+          <p class="text-xl font-bold mt-2">Porsche Sandown 300 2025</p>
+        </div>
 
-        <a href="https://stuartclarksonphotography.com/portfolio/collections/sandown3002025.html"
-           class="portfolio-card bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300"
-           data-year="2025">
-          <img src="images/clublogo_og.jpg" alt="Porsche Sandown 300 2025" class="w-full h-96 object-cover">
-          <div class="p-4"><p class="text-2xl font-bold">Porsche Sandown 300 2025</p></div>
-        </a>
+        <div class="extra-item">
+          <a href="https://stuartclarksonphotography.com/portfolio/collections/avalonairshow.html">
+            <img src="images/images.png" alt="Avalon Airshow 2025" class="w-full h-96 object-cover rounded-xl">
+          </a>
+          <p class="text-xl font-bold mt-2">Avalon Airshow 2025</p>
+        </div>
 
-        <a href="https://stuartclarksonphotography.com/portfolio/collections/avalonairshow.html"
-           class="portfolio-card bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300"
-           data-year="2025">
-          <img src="images/images.png" alt="Avalon Airshow 2025" class="w-full h-96 object-cover">
-          <div class="p-4"><p class="text-2xl font-bold">Avalon Airshow 2025</p></div>
-        </a>
+
+      <div class="extra-item">
+          <a href="https://stuartclarksonphotography.com/portfolio/collections/alfass22025.html">
+            <img src="images/sjcphotography-10.jpg" alt="AROCA Supersprint Round 2" class="w-full h-96 object-cover rounded-xl">
+          </a>
+          <p class="text-xl font-bold mt-2">AROCA Supersprint Round 2</p>
+        </div>
+      </div>      
       </div>
-    </section>
-    <!-- 2024 Group -->
-    <section class="year-group fade" data-year="2024">
-      <h2 class="year-title text-3xl font-bold mb-6 border-b border-gray-600 pb-2">2024</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <a href="https://stuartclarksonphotography.com/portfolio/collections/ausgp2024.html"
-           class="portfolio-card bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300"
-           data-year="2024">
-          <img src="images/rsz_3dsc_1325.jpg" alt="Australian Grand Prix 2024" class="w-full h-96 object-cover">
-          <div class="p-4"><p class="text-2xl font-bold">Australian Grand Prix 2024</p></div>
-        </a>
-
-        <a href="https://stuartclarksonphotography.com/portfolio/collections/sandown5002024.html"
-           class="portfolio-card bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300"
-           data-year="2024">
-          <img src="images/sjcphotography-25.jpg" alt="Sandown 500 2024" class="w-full h-96 object-cover">
-          <div class="p-4"><p class="text-2xl font-bold">Sandown 500 2024</p></div>
-        </a>
-
-        <a href="https://stuartclarksonphotography.com/portfolio/collections/fccm.html"
-           class="portfolio-card bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300"
-           data-year="2024">
-          <img src="images/sjcphotography-4.jpg" alt="Fox Classic Car Museum" class="w-full h-96 object-cover">
-          <div class="p-4"><p class="text-2xl font-bold">Fox Classic Car Museum</p></div>
-        </a>
+      <div class="flex justify-center mt-5">
+        <button class="show-more bg-purple-600 px-4 py-2 rounded-lg hover:bg-purple-700 transition" data-year="2025">View More</button>
       </div>
-    </section>
+    </div>
+    <!-- 2024 -->
+    <div class="year-group" data-year="2024">
+      <h2 class="text-2xl font-bold mb-4 border-b border-gray-600">2024</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
+        <div>
+          <a href="https://stuartclarksonphotography.com/portfolio/collections/ausgp2024.html">
+            <img src="images/rsz_3dsc_1325.jpg" alt="Australian Grand Prix 2024" class="w-full h-96 object-cover rounded-xl">
+          </a>
+          <p class="text-xl font-bold mt-2">Australian Grand Prix 2024</p>
+        </div>
 
+        <div>
+          <a href="https://stuartclarksonphotography.com/portfolio/collections/sandown5002024.html">
+            <img src="images/sjcphotography-25.jpg" alt="Sandown 500 2024" class="w-full h-96 object-cover rounded-xl">
+          </a>
+          <p class="text-xl font-bold mt-2">Sandown 500 2024</p>
+        </div>
+
+        <div>
+          <a href="https://stuartclarksonphotography.com/portfolio/collections/fccm.html">
+            <img src="images/sjcphotography-4.jpg" alt="Fox Classic Car Museum" class="w-full h-96 object-cover rounded-xl">
+          </a>
+          <p class="text-xl font-bold mt-2">Fox Classic Car Museum</p>
+        </div>
+
+       <!-- Hidden extras
+        <div class="extra-item">
+          <a href="#"><img src="images/sjcphotography-119.jpg" alt="Extra 2024" class="w-full h-96 object-cover rounded-xl"></a>
+          <p class="text-xl font-bold mt-2">Other 2024 Collection</p>
+        </div>
+      </div>
+
+      <div class="flex justify-center mt-5">
+        <button class="show-more bg-purple-600 px-4 py-2 rounded-lg hover:bg-purple-700 transition" data-year="2024">View More</button>
+      </div> -->
+    </div>
+
+ 
   </main>
 
   <!-- Footer -->
@@ -125,31 +185,43 @@
     <p>&copy; 2025 Stuart Clarkson Photography. All rights reserved.</p>
   </section>
 
-  <!-- Filtering Script -->
   <script>
-    const filterButtons = document.querySelectorAll('.filter-btn');
+    const filterButtons = document.querySelectorAll('.filter-button');
     const yearGroups = document.querySelectorAll('.year-group');
+    const showMoreButtons = document.querySelectorAll('.show-more');
 
+    // Filtering
     filterButtons.forEach(button => {
       button.addEventListener('click', () => {
-        // Highlight the active button
-        filterButtons.forEach(btn => btn.classList.remove('active-filter'));
+        const year = button.dataset.year;
+        filterButtons.forEach(b => b.classList.remove('active-filter'));
         button.classList.add('active-filter');
-        const selectedYear = button.dataset.year;
 
         yearGroups.forEach(group => {
-          const title = group.querySelector('.year-title');
-
-          if (selectedYear === 'all') {
-            group.style.display = 'block';
-            title.style.display = 'block';
-          } else if (group.dataset.year === selectedYear) {
-            group.style.display = 'block';
-            title.style.display = ''; // hide title when filtered by single year
+          if (year === 'all') {
+            group.classList.remove('hidden');
+            // Reset to only show first 3 when switching back to "All"
+            group.classList.remove('show-all');
+            const btn = group.querySelector('.show-more');
+            if (btn) btn.textContent = 'View More';
+          } else if (group.dataset.year === year) {
+            group.classList.remove('hidden');
+            // Show all items for that year
+            group.classList.add('show-all');
           } else {
-            group.style.display = 'none';
+            group.classList.add('hidden');
           }
         });
+      });
+    });
+
+    // View More logic
+    showMoreButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const year = button.dataset.year;
+        const group = document.querySelector(`.year-group[data-year="${year}"]`);
+        group.classList.toggle('show-all');
+        button.textContent = group.classList.contains('show-all') ? 'Show Less' : 'View More';
       });
     });
   </script>
