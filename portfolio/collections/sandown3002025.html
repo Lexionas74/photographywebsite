@@ -8,22 +8,37 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-    }
-    .card {
-      width: 100%; 
-    }
-    #modalImage {
-    max-width: 80%; /* Adjusts width to fit within the screen */
-    max-height: 80%; /* Ensures image doesn't overflow vertically */
-    object-fit: contain; /* Preserves the image's aspect ratio */
-    aspect-ratio: 3/2; /* Optional: Forces a consistent aspect ratio */
-    width: auto; /* Adjusts to fit the container */
-    height: auto; /* Adjusts to fit the container */
-    }
-  </style>
+<style>
+  #image-modal {
+    opacity: 0;
+    transition: opacity 0.45s ease-in-out;
+    pointer-events: none;
+    z-index: 9999;
+  }
+  #image-modal.active {
+    opacity: 1 !important;
+    pointer-events: all !important;
+  }
+
+  #modal-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 12px;
+    opacity: 0;
+    transition: opacity 0s ease-in-out;
+  }
+  #modal-img.visible {
+    opacity: 1;
+  }
+
+  .card { cursor: pointer; }
+  #close-modal {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+</style>
 </head>
 <body class="bg-gradient-to-r from-gray-900 via-black-900 to-blue-900 text-white">
   <!-- Header -->
@@ -94,51 +109,137 @@
     </main>
 
 
-    <div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-        <button onclick="closeModal()" class="absolute top-5 right-5 text-white text-3xl font-bold">&times;</button>
-        <img id="modalImage" src="" alt="Preview" class="max-w-1000px max-h-1000px rounded-lg shadow-lg">
-      </div>
-    <script>
-    const cards = document.querySelectorAll('.card');
-    const modal = document.getElementById('imageModal');
-    const modalImage = document.getElementById('modalImage');
-    const contentWrapper = document.getElementById('contentWrapper');
+<div id="image-modal"
+     class="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[9999]"
+     style="opacity:0; pointer-events:none;">
+  <button id="close-modal"
+          aria-label="Close"
+          class="absolute top-5 right-6 text-white text-4xl font-bold hover:text-blue-300 z-[10000]">×</button>
+  <div id="modal-inner" class="max-w-5xl w-full p-4 flex justify-center items-center">
+    <img id="modal-img" src="" alt="Full view"
+         class="rounded-xl w-full h-auto max-h-[90vh] object-contain shadow-lg">
+  </div>
+</div>
 
- 
-    cards.forEach(card => {
-      card.addEventListener('click', () => {
-        const imageSrc = card.getAttribute('data-src');
-        modalImage.src = imageSrc;
-        modal.classList.remove('hidden');
-        contentWrapper.classList.add('blur-lg'); 
-      });
+
+</div>
+</div>
+<script>
+(function () {
+  const modal = document.getElementById('image-modal');
+  const modalImg = document.getElementById('modal-img');
+  const closeBtn = document.getElementById('close-modal');
+  const cards = document.querySelectorAll('.card');
+
+  let clone;
+  let activeImage = null;
+  let originalRect = null;
+
+  function openModal(img) {
+    activeImage = img;
+    originalRect = img.getBoundingClientRect();
+    const body = document.body;
+
+    if (modal.classList.contains('active')) return;
+
+    // Create zoom clone
+    clone = img.cloneNode();
+    Object.assign(clone.style, {
+      position: 'fixed',
+      left: originalRect.left + 'px',
+      top: originalRect.top + 'px',
+      width: originalRect.width + 'px',
+      height: originalRect.height + 'px',
+      borderRadius: getComputedStyle(img).borderRadius,
+      objectFit: 'cover',
+      transition: 'all 0.45s cubic-bezier(0.23, 1, 0.32, 1)',
+      zIndex: '10000',
+      boxShadow: '0 0 30px rgba(0,0,0,0.6)',
+    });
+    body.appendChild(clone);
+
+    // Trigger animation
+    void clone.offsetWidth;
+
+    const targetW = Math.min(window.innerWidth * 0.8, 1000);
+    const targetH = Math.min(window.innerHeight * 0.8, targetW * (img.naturalHeight / img.naturalWidth));
+    const targetL = (window.innerWidth - targetW) / 2;
+    const targetT = (window.innerHeight - targetH) / 2;
+
+    modal.classList.add('active');
+    Object.assign(clone.style, {
+      left: targetL + 'px',
+      top: targetT + 'px',
+      width: targetW + 'px',
+      height: targetH + 'px',
+      borderRadius: '12px',
     });
 
+    // After zoom finishes, fade in modal image
+    setTimeout(() => {
+      modalImg.src = img.dataset.src || img.src;
+      modalImg.onload = () => modalImg.classList.add('visible');
+      clone.remove();
+      body.style.overflow = 'hidden';
+    }, 450);
+  }
 
-    function closeModal() {
-      modal.classList.add('hidden');
-      modalImage.src = '';
-      contentWrapper.classList.remove('blur-lg');
-      }
-      document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
-          closeModal();
-        }
-      });
-      cards.forEach(card => {
-        card.addEventListener('click', () => {
-          const imageSrc = card.getAttribute('data-src'); // Get the data-src attribute
-          modalImage.src = imageSrc; // Set the image source
-          modal.classList.remove('hidden'); // Show the modal
-        });
-      });
-    
-      // Function to close modal
-      function closeModal() {
-        modal.classList.add('hidden'); // Hide the modal
-        modalImage.src = ''; // Clear the modal image
-      }
-    </script>
+  function closeModal() {
+    if (!activeImage || !modal.classList.contains('active')) return;
+
+    const body = document.body;
+    const imgRect = modalImg.getBoundingClientRect();
+    const reverse = modalImg.cloneNode();
+
+    Object.assign(reverse.style, {
+      position: 'fixed',
+      left: imgRect.left + 'px',
+      top: imgRect.top + 'px',
+      width: imgRect.width + 'px',
+      height: imgRect.height + 'px',
+      borderRadius: '12px',
+      transition: 'all 0.45s cubic-bezier(0.23, 1, 0.32, 1)',
+      zIndex: '10000',
+      boxShadow: '0 0 30px rgba(0,0,0,0.6)',
+    });
+
+    body.appendChild(reverse);
+
+    // Hide modal while reverse clone animates
+    modalImg.classList.remove('visible');
+
+    // Animate overlay fade slightly delayed for cinematic feel
+    setTimeout(() => modal.classList.remove('active'), 100);
+
+    const endRect = activeImage.getBoundingClientRect();
+    Object.assign(reverse.style, {
+      left: endRect.left + 'px',
+      top: endRect.top + 'px',
+      width: endRect.width + 'px',
+      height: endRect.height + 'px',
+      borderRadius: getComputedStyle(activeImage).borderRadius,
+    });
+
+    setTimeout(() => {
+      reverse.remove();
+      modalImg.src = '';
+      body.style.overflow = '';
+      activeImage = null;
+    }, 450);
+  }
+
+  // Event bindings
+  cards.forEach(card => {
+    const img = card.querySelector('img');
+    if (!img) return;
+    card.addEventListener('click', () => openModal(img));
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  window.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+})();
+</script>
 </body>
     <footer class="bg-gray-800 text-center py-6 mt-10">
       <p>&copy; 2025 Stuart Clarkson Photography. All rights reserved.</p>
