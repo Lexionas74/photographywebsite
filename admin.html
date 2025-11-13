@@ -169,25 +169,26 @@ async function loadDeleteTable() {
   const table = document.getElementById("deleteTable");
   table.innerHTML = "";
 
-  images.forEach(img => {
-    // Extract ONLY the storage file path
-    const storagePath = img.image_url.split("/object/public/images/")[1];
+images.forEach(img => {
+  // FIXED: correct extraction of storage path
+  const storagePath = img.image_url.split("/images/")[1];
 
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td class="p-2">${img.id}</td>
-      <td class="p-2">${img.gallery}</td>
-      <td class="p-2">${img.title ?? ""}</td>
-      <td class="p-2"><img src="${img.image_url}" class="h-20 rounded"></td>
-      <td class="p-2">
-        <button onclick="deleteImage(${img.id}, '${storagePath}')"
-          class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded">
-          Delete
-        </button>
-      </td>
-    `;
-    table.appendChild(row);
-  });
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td class="p-2">${img.id}</td>
+    <td class="p-2">${img.gallery}</td>
+    <td class="p-2">${img.title ?? ""}</td>
+    <td class="p-2"><img src="${img.image_url}" class="h-20 rounded"></td>
+    <td class="p-2">
+      <button onclick="deleteImage(${img.id}, '${storagePath}')"
+        class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded">
+        Delete
+      </button>
+    </td>
+  `;
+  table.appendChild(row);
+});
+
 }
 
 async function deleteImage(id, storagePath) {
