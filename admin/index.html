@@ -299,11 +299,36 @@
     });
   }
 
-  // Save new sort order
-  saveSortBtn.addEventListener("click", async () => {
-    const rows = Array.from(deleteTable.querySelectorAll("tr"));
-    const updates: { id: number; sort_order: number }[] = [];
-    const perGalleryOrder: Record<string, number> = {};
+// Save new sort order
+saveSortBtn.addEventListener("click", async () => {
+  const rows = Array.from(deleteTable.querySelectorAll("tr"));
+
+  // These must NOT have TypeScript types!
+  const updates = []; 
+  const perGalleryOrder = {};
+
+  rows.forEach((row) => {
+    const id = parseInt(row.dataset.id, 10);
+    const gallery = row.dataset.gallery;
+
+    if (!perGalleryOrder[gallery]) perGalleryOrder[gallery] = 1;
+    const order = perGalleryOrder[gallery]++;
+
+    updates.push({ id: id, sort_order: order });
+  });
+
+  const { error } = await supabase.from("images").upsert(updates);
+
+  if (error) {
+    console.error("Sorting save error:", error.message);
+    alert("Failed to save sorting.");
+    return;
+  }
+
+  alert("Sorting saved!");
+  loadDeleteTable();
+});
+
 
     rows.forEach((row) => {
       const id = parseInt(row.dataset.id, 10);
