@@ -14,7 +14,7 @@
   </style>
 </head>
 
-<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center">
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center p-8">
 
   <!-- LOGIN -->
   <div id="loginSection" class="text-center">
@@ -28,26 +28,24 @@
     <p id="loginError" class="text-red-400 mt-3 hidden">Incorrect password</p>
   </div>
 
-  <!-- UPLOAD FORM -->
-  <div id="uploadSection" class="hidden text-center max-w-md w-full p-6 bg-gray-800 rounded-xl mt-6 shadow-xl">
+  <!-- UPLOAD SECTION -->
+  <div id="uploadSection" class="hidden w-full max-w-xl bg-gray-800 p-6 rounded-xl shadow-xl mt-8">
     <h1 class="text-3xl font-bold mb-6">Upload New Image</h1>
 
     <form id="uploadForm" class="space-y-4">
 
       <div>
-        <label class="block text-left mb-1">Gallery Name:</label>
-        <input type="text" id="galleryInput" class="w-full px-4 py-2 rounded-lg text-black"
-               placeholder="e.g. gtwc2025" required>
+        <label class="block mb-1">Gallery Name:</label>
+        <input type="text" id="galleryInput" class="w-full px-4 py-2 rounded-lg text-black" required>
       </div>
 
       <div>
-        <label class="block text-left mb-1">Image Title (optional):</label>
-        <input type="text" id="titleInput" class="w-full px-4 py-2 rounded-lg text-black"
-               placeholder="e.g. Turn 1 Battle">
+        <label class="block mb-1">Image Title:</label>
+        <input type="text" id="titleInput" class="w-full px-4 py-2 rounded-lg text-black">
       </div>
 
       <div>
-        <label class="block text-left mb-1">Select Image:</label>
+        <label class="block mb-1">Select Image:</label>
         <input type="file" id="fileInput" accept="image/*" class="text-white" required>
       </div>
 
@@ -57,98 +55,106 @@
       </button>
     </form>
 
-    <!-- PREVIEW -->
-    <div id="previewSection" class="hidden mt-6">
+    <div id="previewSection" class="hidden mt-6 text-center">
       <p class="text-lg font-semibold">Upload Successful!</p>
       <img id="previewImage" class="mt-3 rounded-xl max-h-96 mx-auto shadow-lg">
       <p id="imageUrl" class="mt-2 text-purple-400 break-all"></p>
     </div>
   </div>
 
+  <!-- DELETE PANEL -->
+  <div id="deletePanel" class="hidden w-full max-w-4xl bg-gray-800 p-6 rounded-xl shadow-xl mt-10">
+    <h1 class="text-3xl font-bold mb-6 text-center">Manage & Delete Images</h1>
+
+    <table class="w-full text-left">
+      <thead>
+        <tr class="border-b border-gray-600">
+          <th class="p-2">ID</th>
+          <th class="p-2">Gallery</th>
+          <th class="p-2">Title</th>
+          <th class="p-2">Preview</th>
+          <th class="p-2">Delete</th>
+        </tr>
+      </thead>
+      <tbody id="deleteTable"></tbody>
+    </table>
+  </div>
+
 <script>
-  // ------------------------------------------------------------
-  // CONFIG (FILL THESE IN)
-  // ------------------------------------------------------------
-  const ADMIN_PASSWORD = "123";  
-const SUPABASE_FUNCTION_URL = "https://ygnfuztbwsngjihrinlr.functions.supabase.co/upload";
+const ADMIN_PASSWORD = "123";
+const SUPABASE_FUNCTION_UPLOAD = "https://ygnfuztbwsngjihrinlr.functions.supabase.co/upload";
+const SUPABASE_FUNCTION_DELETE = "https://ygnfuztbwsngjihrinlr.functions.supabase.co/delete";
+const SUPABASE_URL = "https://ygnfuztbwsngjihrinlr.supabase.co";
+const SUPABASE_ANON_KEY = "YOUR_ANON_KEY_HERE";
 
-  // ------------------------------------------------------------
-  // LOGIN LOGIC
-  // ------------------------------------------------------------
-  const loginSection = document.getElementById("loginSection");
-  const uploadSection = document.getElementById("uploadSection");
-  const loginButton = document.getElementById("loginButton");
-  const passwordInput = document.getElementById("passwordInput");
-  const loginError = document.getElementById("loginError");
 
-  loginButton.addEventListener("click", () => {
-    if (passwordInput.value.trim() === ADMIN_PASSWORD) {
-      loginSection.classList.add("hidden");
-      uploadSection.classList.remove("hidden");
-      loginError.classList.add("hidden");
-    } else {
-      loginError.classList.remove("hidden");
+// Login logic
+document.getElementById("loginButton").addEventListener("click", () => {
+  const pass = document.getElementById("passwordInput").value.trim();
+  if (pass === ADMIN_PASSWORD) {
+    document.getElementById("loginSection").classList.add("hidden");
+    document.getElementById("uploadSection").classList.remove("hidden");
+    document.getElementById("deletePanel").classList.remove("hidden");
+    loadDeleteTable();
+  } else {
+    document.getElementById("loginError").classList.remove("hidden");
+  }
+});
+
+
+// Load delete list
+async function loadDeleteTable() {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/images?select=*`, {
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`
     }
   });
+  const images = await res.json();
 
-  // Allow ENTER key
-  passwordInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") loginButton.click();
+  const table = document.getElementById("deleteTable");
+  table.innerHTML = "";
+
+  images.forEach(img => {
+    const row = document.createElement("tr");
+    const path = img.image_url.split("/images/")[1]; // Extract path
+
+    row.innerHTML = `
+      <td class="p-2">${img.id}</td>
+      <td class="p-2">${img.gallery}</td>
+      <td class="p-2">${img.title}</td>
+      <td class="p-2"><img src="${img.image_url}" class="h-20 rounded"></td>
+      <td class="p-2">
+        <button onclick="deleteImage(${img.id}, '${path}')"
+          class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded">
+          Delete
+        </button>
+      </td>
+    `;
+
+    table.appendChild(row);
+  });
+}
+
+
+// Delete logic
+async function deleteImage(id, storagePath) {
+  if (!confirm("Delete this image?")) return;
+
+  const res = await fetch(SUPABASE_FUNCTION_DELETE, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id, storagePath })
   });
 
-
-  // ------------------------------------------------------------
-  // UPLOAD LOGIC
-  // ------------------------------------------------------------
-  const uploadForm = document.getElementById("uploadForm");
-  const fileInput = document.getElementById("fileInput");
-  const galleryInput = document.getElementById("galleryInput");
-  const titleInput = document.getElementById("titleInput");
-
-  const previewSection = document.getElementById("previewSection");
-  const previewImage = document.getElementById("previewImage");
-  const imageUrl = document.getElementById("imageUrl");
-
-  uploadForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const file = fileInput.files[0];
-    const gallery = galleryInput.value.trim();
-    const title = titleInput.value.trim();
-
-    if (!file) return alert("Please select an image first.");
-    if (!gallery) return alert("Gallery name is required.");
-
-    const formData = new FormData();
-    formData.append("gallery", gallery);
-    formData.append("title", title);
-    formData.append("image", file);
-
-    try {
-      const res = await fetch(SUPABASE_FUNCTION_URL, {
-        method: "POST",
-        body: formData
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        console.error("Upload error:", data);
-        alert("Upload failed: " + (data.error || "Unknown error"));
-        return;
-      }
-
-      // SUCCESS
-      previewSection.classList.remove("hidden");
-      previewImage.src = data.url;
-      imageUrl.textContent = data.url;
-
-      fileInput.value = "";
-    } catch (err) {
-      console.error("Error:", err);
-      alert("Upload failed.");
-    }
-  });
+  const data = await res.json();
+  if (data.success) {
+    alert("Image deleted.");
+    loadDeleteTable();
+  } else {
+    alert("Error deleting image.");
+  }
+}
 </script>
 
 </body>
