@@ -5,19 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Panel - Stuart Clarkson Photography</title>
 
+  <!-- Tailwind & Supabase -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- CONFIG MUST LOAD BEFORE supabase.js -->
+  <!-- CONFIG MUST BE FIRST -->
   <script>
     const SUPABASE_URL = "https://ygnfuztbwsngjihrinlr.supabase.co";
     const SUPABASE_ANON_KEY =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlnbmZ1enRid3NuZ2ppaHJpbmxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5ODUwOTMsImV4cCI6MjA3ODU2MTA5M30.YlKPGDE3hfF9mOIVbUEQQFtN8gwt6L0MOYldH1AOMGw";
   </script>
 
+  <!-- INIT SUPABASE CLIENT -->
   <script src="/js/supabase.js"></script>
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style> body { font-family: 'Poppins', sans-serif; } </style>
 </head>
 
@@ -103,7 +104,7 @@
 
 <script>
 /* ============================================================
-   ADMIN LOGIN
+   LOGIN SYSTEM
 ============================================================ */
 const ADMIN_PASSWORD = "123";
 
@@ -121,7 +122,7 @@ document.getElementById("loginButton").onclick = () => {
 
 
 /* ============================================================
-   UPLOAD IMAGE (Edge Function)
+   UPLOAD LOGIC
 ============================================================ */
 document.getElementById("uploadForm").addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -141,7 +142,11 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
   );
 
   const data = await res.json();
-  if (!data.success) return alert("Upload failed.");
+
+  if (!data.success) {
+    alert("Upload failed.");
+    return;
+  }
 
   document.getElementById("previewSection").classList.remove("hidden");
   document.getElementById("previewImage").src = data.url;
@@ -160,10 +165,10 @@ async function loadDeleteTable() {
   const { data: images, error } = await supabase
     .from("images")
     .select("*")
-    .order("id", { ascending: true });
+    .order("id");
 
   if (error) {
-    console.error(error);
+    console.error("DB ERROR:", error);
     return;
   }
 
@@ -180,9 +185,7 @@ async function loadDeleteTable() {
       <td class="p-2">${img.id}</td>
       <td class="p-2">${img.gallery}</td>
       <td class="p-2">${img.title ?? ""}</td>
-      <td class="p-2">
-        <img src="${img.image_url}" class="h-20 rounded">
-      </td>
+      <td class="p-2"><img src="${img.image_url}" class="h-20 rounded"></td>
       <td class="p-2">
         <button onclick="deleteImage(${img.id}, '${storagePath}')"
           class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded">
@@ -196,7 +199,7 @@ async function loadDeleteTable() {
 
 
 /* ============================================================
-   DELETE IMAGE (Edge Function)
+   DELETE LOGIC
 ============================================================ */
 async function deleteImage(id, storagePath) {
   if (!confirm("Delete this image permanently?")) return;
