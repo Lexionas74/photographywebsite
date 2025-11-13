@@ -29,23 +29,23 @@
   <a href="https://stuartclarksonphotography.com" class="text-3xl font-bold">Stuart Clarkson</a>
   <nav>
     <ul class="flex space-x-6 text-lg">
-      <li><a href="/portfolio" class="hover:text-purple-300">Portfolio</a></li>
-      <li><a href="/socials" class="hover:text-purple-300">Socials</a></li>
+      <li><a href="/portfolio" class="hover:text-blue-600">Portfolio</a></li>
+      <li><a href="/socials" class="hover:text-blue-600">Socials</a></li>
     </ul>
   </nav>
 </header>
 
-<!-- Title -->
+
 <center><p class="text-2xl font-bold">2025 GT World Challenge Round 7&8</p></center>
 <center><p class="py-5"><strong>Gear Used</strong><br>Camera: Canon EOS R50 <br>Lens: Canon EF 70-300 f4-5.6 & Canon EF 24-70 f4</p></center>
 
-<!-- Gallery -->
+
 <main class="flex justify-center items-center min-h-screen">
   <div id="gtwc2025-gallery" class="grid grid-cols-1 md:grid-cols-3 gap-3 p-10 max-w-1500px">
   </div>
 </main>
 
-<!-- Modal -->
+
 <div id="image-modal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 hidden flex items-center justify-center">
   <div id="modal-inner" class="relative max-w-5xl w-full p-4">
     <span id="close-modal" class="absolute top-4 right-6 text-white">×</span>
@@ -53,7 +53,7 @@
   </div>
 </div>
 
-<!-- Supabase Client -->
+
 <script>
 const SUPABASE_URL = "https://ygnfuztbwsngjihrinlr.supabase.co";
 const SUPABASE_ANON_KEY =
@@ -61,7 +61,6 @@ const SUPABASE_ANON_KEY =
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-/* Fetch gallery images */
 async function fetchGalleryImages(gallery) {
   const { data, error } = await supabase
     .from("images")
@@ -75,14 +74,12 @@ async function fetchGalleryImages(gallery) {
   }
   return data;
 }
-
-/* Render gallery */
 async function renderGallery() {
   const container = document.getElementById("gtwc2025-gallery");
   const images = await fetchGalleryImages("gtwc2025");
-
+/*If you want square photos, etc, change style="aspect-ratio:3/2;" to whatever you want */
 container.innerHTML = images.map(img => `
-  <div 
+<div  
     class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"
     data-src="${img.image_url}"
   >
@@ -94,8 +91,6 @@ container.innerHTML = images.map(img => `
 
   initModal();
 }
-
-/* Image modal */
 function initModal() {
   const modal = document.getElementById("image-modal");
   const modalImg = document.getElementById("modal-img");
@@ -122,9 +117,10 @@ function initModal() {
   });
 }
 
-/* Load on page ready */
 document.addEventListener("DOMContentLoaded", renderGallery);
 </script>
-
+    <section class="relative left-1/2 transform -translate-x-1/2 w-screen flex justify-center mt-16 mb-10">  
+        <a href="#" class="transform hover:scale-105 inline-block bg-gray-800 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full transition-all duration-300">Back To Top</a>
+    </section>
 </body>
 </html>
