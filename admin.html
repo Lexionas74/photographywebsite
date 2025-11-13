@@ -158,42 +158,42 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
    DELETE TABLE LOADING
 ============================================================ */
 async function loadDeleteTable() {
-  const { data, error } = await supabase
-    .from("images")
-    .select("*")
-    .order("id", { ascending: true });
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/images?select=*`, {
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`
+    }
+  });
 
+  const images = await res.json();
   const table = document.getElementById("deleteTable");
   table.innerHTML = "";
 
-  data.forEach((img) => {
-    const storagePath = extractStoragePath(img.image_url);
+  images.forEach(img => {
+    // Extract ONLY the storage file path
+    const storagePath = img.image_url.split("/object/public/images/")[1];
 
-    table.innerHTML += `
-      <tr>
-        <td class="p-2">${img.id}</td>
-        <td class="p-2">${img.gallery}</td>
-        <td class="p-2">${img.title || ""}</td>
-        <td class="p-2"><img src="${img.image_url}" class="h-20 rounded"></td>
-        <td class="p-2">
-          <button class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded"
-            onclick="deleteImage(${img.id}, '${storagePath}')">
-            Delete
-          </button>
-        </td>
-      </tr>
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td class="p-2">${img.id}</td>
+      <td class="p-2">${img.gallery}</td>
+      <td class="p-2">${img.title ?? ""}</td>
+      <td class="p-2"><img src="${img.image_url}" class="h-20 rounded"></td>
+      <td class="p-2">
+        <button onclick="deleteImage(${img.id}, '${storagePath}')"
+          class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded">
+          Delete
+        </button>
+      </td>
     `;
+    table.appendChild(row);
   });
 }
 
-
-/* ============================================================
-   DELETE IMAGE LOGIC
-============================================================ */
 async function deleteImage(id, storagePath) {
-  if (!confirm("Delete this image?")) return;
+  if (!confirm("Delete this image permanently?")) return;
 
-  const res = await fetch(DELETE_FUNCTION_URL, {
+  const res = await fetch(SUPABASE_FUNCTION_DELETE, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id, storagePath })
@@ -202,10 +202,10 @@ async function deleteImage(id, storagePath) {
   const data = await res.json();
 
   if (data.success) {
-    alert("Image deleted.");
+    alert("Deleted successfully!");
     loadDeleteTable();
   } else {
-    alert("Failed to delete image.");
+    alert("Delete failed: " + data.error);
   }
 }
 </script>
