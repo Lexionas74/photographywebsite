@@ -9,10 +9,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/supabase.js"></script>
 
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+
   <style>
     body { font-family: "Poppins", sans-serif; }
   </style>
@@ -31,17 +29,14 @@
       placeholder="Enter Admin Password"
     />
 
-    <button
-      id="loginButton"
-      class="ml-3 bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-    >
+    <button id="loginButton"
+      class="ml-3 bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition">
       Login
     </button>
 
-    <p id="loginError" class="text-red-400 mt-3 hidden">
-      Incorrect password
-    </p>
+    <p id="loginError" class="text-red-400 mt-3 hidden">Incorrect password</p>
   </div>
+
 
   <!-- ADMIN PANEL -->
   <div id="adminPanel" class="hidden">
@@ -51,78 +46,46 @@
       <h2 class="text-2xl font-bold mb-4">Upload Image</h2>
 
       <form id="uploadForm" class="space-y-4">
+
         <div>
-          <label class="block mb-1">Gallery Name</label>
-          <input
-            id="galleryInput"
-            type="text"
-            required
-            class="w-full px-4 py-2 rounded-lg text-black"
-            placeholder="e.g. gtwc2025"
-          />
+          <label>Gallery Name</label>
+          <input id="galleryInput" type="text" required class="w-full px-4 py-2 rounded-lg text-black" placeholder="gtwc2025">
         </div>
 
         <div>
-          <label class="block mb-1">Title</label>
-          <input
-            id="titleInput"
-            type="text"
-            class="w-full px-4 py-2 rounded-lg text-black"
-            placeholder="Optional"
-          />
+          <label>Title</label>
+          <input id="titleInput" type="text" class="w-full px-4 py-2 rounded-lg text-black" placeholder="Optional">
         </div>
 
         <div>
-          <label class="block mb-1">Image File</label>
-          <input
-            id="fileInput"
-            type="file"
-            accept="image/*"
-            required
-            class="text-white"
-          />
+          <label>Image File</label>
+          <input id="fileInput" type="file" accept="image/*" required class="text-white">
         </div>
 
-        <button
-          class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg w-full font-semibold"
-        >
-          Upload
-        </button>
+        <button class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg w-full font-semibold">Upload</button>
       </form>
 
       <div id="previewSection" class="hidden mt-6 text-center">
         <p class="text-lg font-semibold">Upload Successful!</p>
-        <img
-          id="previewImage"
-          class="mt-3 rounded-xl max-h-96 mx-auto shadow-lg"
-        />
+        <img id="previewImage" class="mt-3 rounded-xl max-h-96 mx-auto shadow-lg">
         <p id="imageUrl" class="mt-3 text-purple-400 break-all"></p>
       </div>
     </div>
 
-    <!-- SORTING CONTROLS -->
+
+    <!-- SORTING -->
     <div class="max-w-5xl mx-auto mt-10 text-center">
-      <button
-        id="enableSortBtn"
-        class="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 mr-3"
-      >
-        Enable Drag & Drop Sorting
-      </button>
-      <button
-        id="saveSortBtn"
-        class="px-4 py-2 bg-green-600 rounded hover:bg-green-700 hidden"
-      >
-        Save Order
-      </button>
+      <button id="enableSortBtn" class="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 mr-3">Enable Sorting</button>
+      <button id="saveSortBtn" class="px-4 py-2 bg-green-600 rounded hover:bg-green-700 hidden">Save Order</button>
     </div>
 
-    <!-- DELETE / MANAGE TABLE -->
+    <!-- DELETE TABLE -->
     <div class="max-w-5xl mx-auto bg-gray-800 rounded-xl p-6 shadow-xl mt-6">
       <h2 class="text-3xl font-bold mb-6 text-center">Manage & Delete Images</h2>
 
       <table class="w-full text-left">
         <thead>
-          <tr class="border-b border-gray-600 text-sm md:text-base">
+          <tr class="border-b border-gray-600">
             <th class="p-2">ID</th>
             <th class="p-2">Gallery</th>
             <th class="p-2">Title</th>
@@ -133,251 +96,180 @@
         <tbody id="deleteTable"></tbody>
       </table>
     </div>
+
   </div>
 
 <script>
-  const ADMIN_PASSWORD = "123"; // change this
-  const UPLOAD_URL = "https://ygnfuztbwsngjihrinlr.supabase.co/functions/v1/upload";
-  const DELETE_URL = "https://ygnfuztbwsngjihrinlr.supabase.co/functions/v1/delete";
+/* CONFIG */
+const ADMIN_PASSWORD = "123";
 
-  const loginSection = document.getElementById("loginSection");
-  const adminPanel = document.getElementById("adminPanel");
-  const passwordInput = document.getElementById("passwordInput");
-  const loginButton = document.getElementById("loginButton");
-  const loginError = document.getElementById("loginError");
+const UPLOAD_URL = "https://ygnfuztbwsngjihrinlr.supabase.co/functions/v1/upload";
+const DELETE_URL = "https://ygnfuztbwsngjihrinlr.supabase.co/functions/v1/delete";
 
-  const uploadForm = document.getElementById("uploadForm");
-  const galleryInput = document.getElementById("galleryInput");
-  const titleInput = document.getElementById("titleInput");
-  const fileInput = document.getElementById("fileInput");
-  const previewSection = document.getElementById("previewSection");
-  const previewImage = document.getElementById("previewImage");
-  const imageUrl = document.getElementById("imageUrl");
+/* ELEMENTS */
+const loginSection = document.getElementById("loginSection");
+const adminPanel = document.getElementById("adminPanel");
+const loginButton = document.getElementById("loginButton");
+const passwordInput = document.getElementById("passwordInput");
+const loginError = document.getElementById("loginError");
 
-  const deleteTable = document.getElementById("deleteTable");
-  const enableSortBtn = document.getElementById("enableSortBtn");
-  const saveSortBtn = document.getElementById("saveSortBtn");
+const uploadForm = document.getElementById("uploadForm");
+const galleryInput = document.getElementById("galleryInput");
+const titleInput = document.getElementById("titleInput");
+const fileInput = document.getElementById("fileInput");
 
-  let sortingEnabled = false;
+const previewSection = document.getElementById("previewSection");
+const previewImage = document.getElementById("previewImage");
+const imageUrl = document.getElementById("imageUrl");
 
-  // LOGIN
-  loginButton.addEventListener("click", () => {
-    if (passwordInput.value.trim() === ADMIN_PASSWORD) {
-      loginSection.classList.add("hidden");
-      adminPanel.classList.remove("hidden");
-      loginError.classList.add("hidden");
-      loadDeleteTable();
-    } else {
-      loginError.classList.remove("hidden");
-    }
+const deleteTable = document.getElementById("deleteTable");
+const enableSortBtn = document.getElementById("enableSortBtn");
+const saveSortBtn = document.getElementById("saveSortBtn");
+
+let sortingEnabled = false;
+
+/* LOGIN */
+loginButton.addEventListener("click", () => {
+  if (passwordInput.value === ADMIN_PASSWORD) {
+    loginSection.classList.add("hidden");
+    adminPanel.classList.remove("hidden");
+    loadDeleteTable();
+  } else {
+    loginError.classList.remove("hidden");
+  }
+});
+
+/* UPLOAD */
+uploadForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const formData = new FormData();
+  formData.append("gallery", galleryInput.value);
+  formData.append("title", titleInput.value);
+  formData.append("image", fileInput.files[0]);
+
+  const res = await fetch(UPLOAD_URL, { method: "POST", body: formData });
+  const data = await res.json();
+
+  if (!data.success) return alert("Upload failed.");
+
+  previewSection.classList.remove("hidden");
+  previewImage.src = data.url;
+  imageUrl.textContent = data.url;
+
+  loadDeleteTable();
+});
+
+/* LOAD TABLE */
+async function loadDeleteTable() {
+  const { data: images, error } = await supabase
+    .from("images")
+    .select("*")
+    .order("gallery")
+    .order("sort_order")
+    .order("id");
+
+  deleteTable.innerHTML = "";
+
+  images.forEach(img => {
+    const row = document.createElement("tr");
+    row.dataset.id = img.id;
+    row.dataset.gallery = img.gallery;
+
+    row.innerHTML = `
+      <td class="p-2">${img.id}</td>
+      <td class="p-2">${img.gallery}</td>
+      <td class="p-2">${img.title || ""}</td>
+      <td class="p-2"><img src="${img.image_url}" class="h-20 rounded"></td>
+      <td class="p-2">
+        <button class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded"
+          onclick="deleteImage(${img.id}, '${img.image_url.split("/object/public/images/")[1]}')">
+          Delete
+        </button>
+      </td>
+    `;
+
+    deleteTable.appendChild(row);
   });
 
-  // Upload handler
-  uploadForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  if (sortingEnabled) attachDragHandlers();
+}
 
-    const file = fileInput.files[0];
-    const gallery = galleryInput.value.trim();
-    const title = titleInput.value.trim();
+/* SORTING */
+enableSortBtn.addEventListener("click", () => {
+  sortingEnabled = true;
+  saveSortBtn.classList.remove("hidden");
+  attachDragHandlers();
+});
 
-    if (!file || !gallery) {
-      alert("Gallery and image are required.");
-      return;
-    }
+function attachDragHandlers() {
+  const rows = deleteTable.querySelectorAll("tr");
 
-    const formData = new FormData();
-    formData.append("gallery", gallery);
-    formData.append("title", title);
-    formData.append("image", file);
+  rows.forEach(row => {
+    row.draggable = true;
 
-    try {
-      const res = await fetch(UPLOAD_URL, {
-        method: "POST",
-        body: formData,
-      });
+    row.addEventListener("dragstart", e => {
+      e.dataTransfer.setData("id", row.dataset.id);
+      row.classList.add("opacity-50");
+    });
 
-      const data = await res.json();
+    row.addEventListener("dragend", () => {
+      row.classList.remove("opacity-50");
+    });
 
-      if (!data.success) {
-        console.error("Upload error:", data.error);
-        alert("Upload failed: " + (data.error || "Unknown error"));
-        return;
+    row.addEventListener("dragover", e => {
+      e.preventDefault();
+      const draggingId = e.dataTransfer.getData("id");
+      const draggingRow = document.querySelector(`tr[data-id="${draggingId}"]`);
+      if (draggingRow && draggingRow !== row) {
+        deleteTable.insertBefore(draggingRow, row);
       }
-
-      previewSection.classList.remove("hidden");
-      previewImage.src = data.url;
-      imageUrl.textContent = data.url;
-
-      fileInput.value = "";
-      loadDeleteTable();
-    } catch (err) {
-      console.error("Upload exception:", err);
-      alert("Upload failed.");
-    }
-  });
-
-  // Load table
-  async function loadDeleteTable() {
-    const { data: images, error } = await supabase
-      .from("images")
-      .select("*")
-      .order("gallery", { ascending: true })
-      .order("sort_order", { ascending: true })
-      .order("id", { ascending: true });
-
-    if (error) {
-      console.error("Error loading images:", error.message);
-      return;
-    }
-
-    deleteTable.innerHTML = "";
-
-    images.forEach((img) => {
-      const tr = document.createElement("tr");
-      tr.className = "border-b border-gray-700";
-      tr.dataset.id = img.id;
-      tr.dataset.gallery = img.gallery;
-      tr.draggable = sortingEnabled;
-
-      tr.innerHTML = `
-        <td class="p-2 text-sm md:text-base">${img.id}</td>
-        <td class="p-2 text-sm md:text-base">${img.gallery}</td>
-        <td class="p-2 text-sm md:text-base">${img.title ?? ""}</td>
-        <td class="p-2">
-          <img src="${img.image_url}" class="h-20 rounded object-cover">
-        </td>
-        <td class="p-2">
-          <button
-            class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm md:text-base"
-            onclick="deleteImage(${img.id}, '${img.image_url.split("/object/public/images/")[1]}')"
-          >
-            Delete
-          </button>
-        </td>
-      `;
-
-      deleteTable.appendChild(tr);
     });
-
-    if (sortingEnabled) {
-      attachDragHandlers();
-    }
-  }
-
-  // Enable sorting
-  enableSortBtn.addEventListener("click", () => {
-    sortingEnabled = true;
-    saveSortBtn.classList.remove("hidden");
-    attachDragHandlers();
   });
+}
 
-  function attachDragHandlers() {
-    const rows = deleteTable.querySelectorAll("tr");
-
-    rows.forEach((row) => {
-      row.draggable = true;
-
-      row.addEventListener("dragstart", (e) => {
-        e.dataTransfer.setData("id", row.dataset.id);
-        row.classList.add("opacity-50");
-      });
-
-      row.addEventListener("dragend", () => {
-        row.classList.remove("opacity-50");
-      });
-
-      row.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        const draggingId = e.dataTransfer.getData("id");
-        const draggingRow = deleteTable.querySelector(
-          `tr[data-id="${draggingId}"]`
-        );
-        if (draggingRow && draggingRow !== row) {
-          deleteTable.insertBefore(draggingRow, row);
-        }
-      });
-    });
-  }
-
-// Save new sort order
+/* SAVE SORT ORDER */
 saveSortBtn.addEventListener("click", async () => {
-  const rows = Array.from(deleteTable.querySelectorAll("tr"));
-
-  // These must NOT have TypeScript types!
-  const updates = []; 
+  const rows = [...deleteTable.querySelectorAll("tr")];
+  const updates = {};
   const perGalleryOrder = {};
 
-  rows.forEach((row) => {
-    const id = parseInt(row.dataset.id, 10);
+  const updateList = rows.map(row => {
+    const id = parseInt(row.dataset.id);
     const gallery = row.dataset.gallery;
 
     if (!perGalleryOrder[gallery]) perGalleryOrder[gallery] = 1;
-    const order = perGalleryOrder[gallery]++;
+    const sort_order = perGalleryOrder[gallery]++;
 
-    updates.push({ id: id, sort_order: order });
+    return { id, sort_order };
   });
 
-  const { error } = await supabase.from("images").upsert(updates);
+  const { error } = await supabase.from("images").upsert(updateList);
 
-  if (error) {
-    console.error("Sorting save error:", error.message);
-    alert("Failed to save sorting.");
-    return;
-  }
-
+  if (error) return alert("Failed to save sorting.");
   alert("Sorting saved!");
   loadDeleteTable();
 });
 
+/* DELETE */
+async function deleteImage(id, storagePath) {
+  if (!confirm("Delete this image permanently?")) return;
 
-    rows.forEach((row) => {
-      const id = parseInt(row.dataset.id, 10);
-      const gallery = row.dataset.gallery;
-      if (!perGalleryOrder[gallery]) perGalleryOrder[gallery] = 1;
-      const order = perGalleryOrder[gallery]++;
+  const res = await fetch(DELETE_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id, storagePath }),
+  });
 
-      updates.push({ id, sort_order: order });
-    });
+  const data = await res.json();
+  if (!data.success) return alert("Delete failed.");
 
-    const { error } = supabase.from("images").upsert(updates);
-    if (error) {
-      console.error("Sorting save error:", error.message);
-      alert("Failed to save sorting.");
-      return;
-    }
+  alert("Deleted.");
+  loadDeleteTable();
+}
 
-    alert("Sorting saved!");
-    loadDeleteTable();
+window.deleteImage = deleteImage;
 
-  // Delete image
-  async function deleteImage(id, storagePath) {
-    if (!confirm("Delete this image permanently?")) return;
-
-    try {
-      const res = await fetch(DELETE_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, storagePath }),
-      });
-
-      const data = await res.json();
-
-      if (!data.success) {
-        console.error("Delete error:", data.error);
-        alert("Delete failed: " + (data.error || "Unknown error"));
-        return;
-      }
-
-      alert("Deleted.");
-      loadDeleteTable();
-    } catch (err) {
-      console.error("Delete exception:", err);
-      alert("Delete failed.");
-    }
-  }
-
-  // Make deleteImage globally visible
-  window.deleteImage = deleteImage;
 </script>
 
 </body>
