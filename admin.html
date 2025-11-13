@@ -3,223 +3,174 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel - Stuart Clarkson Photography</title>
+  <title>Admin Panel - SCP</title>
 
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/supabase.js"></script>
 
-<!-- MUST BE BEFORE supabase.js -->
-<script>
-  const SUPABASE_URL = "https://ygnfuztbwsngjihrinlr.supabase.co";
-  const SUPABASE_ANON_KEY ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlnbmZ1enRid3NuZ2ppaHJpbmxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5ODUwOTMsImV4cCI6MjA3ODU2MTA5M30.YlKPGDE3hfF9mOIVbUEQQFtN8gwt6L0MOYldH1AOMGw";
-</script>
-
-<!-- NOW load supabase client -->
-<script src="/js/supabase.js"></script>
-
-
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style> body { font-family: 'Poppins', sans-serif; } </style>
 </head>
 
-<body class="bg-gray-900 text-white min-h-screen p-6">
+<body class="bg-gray-900 text-white p-10">
 
-  <!-- LOGIN -->
-  <div id="loginSection" class="max-w-xl mx-auto text-center mt-10">
-    <h1 class="text-3xl font-bold mb-4">Admin Login</h1>
+<!-- LOGIN -->
+<div id="loginSection" class="max-w-xl mx-auto text-center">
+  <h1 class="text-3xl font-bold mb-4">Admin Login</h1>
 
-    <input id="passwordInput" type="password"
-      class="px-4 py-2 rounded-lg text-black w-64"
-      placeholder="Enter Admin Password">
+  <input id="passwordInput" type="password"
+    class="px-4 py-2 rounded-lg text-black w-64"
+    placeholder="Enter Admin Password">
 
-    <button id="loginButton"
-      class="ml-3 bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-      Login
-    </button>
+  <button id="loginButton"
+    class="ml-3 bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700">
+    Login
+  </button>
 
-    <p id="loginError" class="text-red-400 mt-3 hidden">Incorrect password</p>
-  </div>
+  <p id="loginError" class="text-red-400 hidden mt-3">
+    Incorrect password
+  </p>
+</div>
 
+<!-- ADMIN PANEL -->
+<div id="adminPanel" class="hidden">
 
-  <!-- ADMIN PANEL -->
-  <div id="adminPanel" class="hidden">
+  <!-- UPLOAD SECTION -->
+  <div class="max-w-xl mx-auto bg-gray-800 p-6 rounded-xl shadow-xl mt-10">
+    <h2 class="text-2xl font-bold mb-4">Upload Image</h2>
 
-    <!-- UPLOAD SECTION -->
-    <div class="max-w-xl mx-auto bg-gray-800 rounded-xl p-6 shadow-xl mt-10">
-      <h2 class="text-2xl font-bold mb-4">Upload Image</h2>
-
-      <form id="uploadForm" class="space-y-4">
-
-        <div>
-          <label>Gallery Name</label>
-          <input id="galleryInput" type="text" required
-            class="w-full px-4 py-2 rounded-lg text-black" placeholder="e.g. gtwc2025">
-        </div>
-
-        <div>
-          <label>Title</label>
-          <input id="titleInput" type="text"
-            class="w-full px-4 py-2 rounded-lg text-black" placeholder="Optional">
-        </div>
-
-        <div>
-          <label>Image File</label>
-          <input id="fileInput" type="file" accept="image/*" required>
-        </div>
-
-        <button class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg w-full">
-          Upload
-        </button>
-
-      </form>
-
-      <div id="previewSection" class="hidden mt-6 text-center">
-        <p class="text-lg font-semibold">Upload Successful!</p>
-        <img id="previewImage" class="mt-3 rounded-xl max-h-96 mx-auto shadow-lg">
-        <p id="imageUrl" class="mt-3 text-purple-400 break-all"></p>
+    <form id="uploadForm" class="space-y-4">
+      <div>
+        <label>Gallery Name</label>
+        <input id="galleryInput" type="text"
+          class="w-full px-4 py-2 rounded-lg text-black" required>
       </div>
+
+      <div>
+        <label>Title</label>
+        <input id="titleInput" type="text"
+          class="w-full px-4 py-2 rounded-lg text-black">
+      </div>
+
+      <div>
+        <label>Image File</label>
+        <input id="fileInput" type="file" accept="image/*" required>
+      </div>
+
+      <button class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg w-full">
+        Upload
+      </button>
+    </form>
+
+    <div id="previewSection" class="hidden mt-6 text-center">
+      <p class="text-lg font-semibold">Upload Successful!</p>
+      <img id="previewImage" class="mt-3 rounded-xl max-h-96 mx-auto shadow-lg">
+      <p id="imageUrl" class="mt-3 text-purple-400 break-all"></p>
     </div>
-
-
-    <!-- DELETE PANEL -->
-    <div class="max-w-5xl mx-auto bg-gray-800 rounded-xl p-6 shadow-xl mt-16">
-      <h2 class="text-3xl font-bold mb-6 text-center">Manage & Delete Images</h2>
-
-      <table class="w-full text-left">
-        <thead>
-          <tr class="border-b border-gray-600">
-            <th class="p-2">ID</th>
-            <th class="p-2">Gallery</th>
-            <th class="p-2">Title</th>
-            <th class="p-2">Preview</th>
-            <th class="p-2">Delete</th>
-          </tr>
-        </thead>
-        <tbody id="deleteTable"></tbody>
-      </table>
-    </div>
-
   </div>
 
+  <!-- DELETE TABLE -->
+  <div class="max-w-5xl mx-auto bg-gray-800 p-6 rounded-xl shadow-xl mt-16">
+    <h2 class="text-3xl font-bold mb-6 text-center">Manage & Delete Images</h2>
+
+    <table class="w-full text-left">
+      <thead>
+        <tr class="border-b border-gray-600">
+          <th class="p-2">ID</th>
+          <th class="p-2">Gallery</th>
+          <th class="p-2">Title</th>
+          <th class="p-2">Preview</th>
+          <th class="p-2">Delete</th>
+        </tr>
+      </thead>
+      <tbody id="deleteTable"></tbody>
+    </table>
+  </div>
+
+</div>
 
 <script>
-/* ============================================================
-   LOGIN SYSTEM
-============================================================ */
+// SETTINGS
 const ADMIN_PASSWORD = "123";
+const UPLOAD_URL = "https://ygnfuztbwsngjihrinlr.supabase.co/functions/v1/upload";
+const DELETE_URL = "https://ygnfuztbwsngjihrinlr.supabase.co/functions/v1/delete";
 
+// LOGIN
 document.getElementById("loginButton").onclick = () => {
   const pass = document.getElementById("passwordInput").value.trim();
-
   if (pass === ADMIN_PASSWORD) {
-    document.getElementById("loginSection").classList.add("hidden");
-    document.getElementById("adminPanel").classList.remove("hidden");
+    loginSection.classList.add("hidden");
+    adminPanel.classList.remove("hidden");
     loadDeleteTable();
-  } else {
-    document.getElementById("loginError").classList.remove("hidden");
-  }
+  } else loginError.classList.remove("hidden");
 };
 
-
-/* ============================================================
-   UPLOAD LOGIC
-============================================================ */
+// UPLOAD
 document.getElementById("uploadForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const file = document.getElementById("fileInput").files[0];
-  const gallery = document.getElementById("galleryInput").value.trim();
-  const title = document.getElementById("titleInput").value.trim();
+  const file = fileInput.files[0];
+  const form = new FormData();
+  form.append("gallery", galleryInput.value.trim());
+  form.append("title", titleInput.value.trim());
+  form.append("image", file);
 
-  const formData = new FormData();
-  formData.append("gallery", gallery);
-  formData.append("title", title);
-  formData.append("image", file);
-
-  const res = await fetch(
-    "https://ygnfuztbwsngjihrinlr.functions.supabase.co/upload",
-    { method: "POST", body: formData }
-  );
-
+  const res = await fetch(UPLOAD_URL, { method: "POST", body: form });
   const data = await res.json();
 
-  if (!data.success) {
-    alert("Upload failed.");
-    return;
-  }
+  if (!data.success) return alert("Upload failed: " + data.error);
 
-  document.getElementById("previewSection").classList.remove("hidden");
-  document.getElementById("previewImage").src = data.url;
-  document.getElementById("imageUrl").textContent = data.url;
+  previewSection.classList.remove("hidden");
+  previewImage.src = data.url;
+  imageUrl.textContent = data.url;
 
   loadDeleteTable();
 });
 
-
-/* ============================================================
-   LOAD DELETE TABLE
-============================================================ */
+// LOAD DELETE TABLE
 async function loadDeleteTable() {
-  console.log("Fetching images...");
-
-  const { data: images, error } = await supabase
-    .from("images")
-    .select("*")
-    .order("id");
-
-  if (error) {
-    console.error("DB ERROR:", error);
-    return;
-  }
-
-  console.log("Loaded images:", images);
+  const { data } = await supabase.from("images").select("*").order("id");
 
   const table = document.getElementById("deleteTable");
   table.innerHTML = "";
 
-  images.forEach(img => {
+  data.forEach(img => {
     const storagePath = img.image_url.split("/object/public/images/")[1];
 
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td class="p-2">${img.id}</td>
-      <td class="p-2">${img.gallery}</td>
-      <td class="p-2">${img.title ?? ""}</td>
-      <td class="p-2"><img src="${img.image_url}" class="h-20 rounded"></td>
-      <td class="p-2">
-        <button onclick="deleteImage(${img.id}, '${storagePath}')"
-          class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded">
-          Delete
-        </button>
-      </td>
+    table.innerHTML += `
+      <tr class="border-b border-gray-700">
+        <td class="p-2">${img.id}</td>
+        <td class="p-2">${img.gallery}</td>
+        <td class="p-2">${img.title ?? ""}</td>
+        <td class="p-2"><img src="${img.image_url}" class="h-20 rounded"></td>
+        <td class="p-2">
+          <button onclick="deleteImage(${img.id}, '${storagePath}')"
+            class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded">
+            Delete
+          </button>
+        </td>
+      </tr>
     `;
-    table.appendChild(row);
   });
 }
 
-
-/* ============================================================
-   DELETE LOGIC
-============================================================ */
+// DELETE IMAGE
 async function deleteImage(id, storagePath) {
-  if (!confirm("Delete this image permanently?")) return;
+  if (!confirm("Delete permanently?")) return;
 
-  const res = await fetch(
-    "https://ygnfuztbwsngjihrinlr.functions.supabase.co/delete",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, storagePath })
-    }
-  );
+  const res = await fetch(DELETE_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id, storagePath })
+  });
 
   const data = await res.json();
 
-  if (data.success) {
-    alert("Deleted successfully!");
-    loadDeleteTable();
-  } else {
-    alert("Delete failed: " + data.error);
-  }
+  if (!data.success) return alert("Delete failed: " + data.error);
+
+  alert("Deleted.");
+  loadDeleteTable();
 }
 </script>
 
