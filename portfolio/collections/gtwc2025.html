@@ -16,7 +16,7 @@
     .card { cursor: pointer; }
 
     #image-modal {
-      transition: opacity 0.25s ease;
+      transition: opacity .25s ease;
       opacity: 0;
     }
     #image-modal:not(.hidden) {
@@ -63,8 +63,8 @@
 <!-- Gallery Container -->
 <main class="flex justify-center items-center min-h-screen">
   <div id="gtwc2025-gallery"
-       class="grid grid-cols-1 md:grid-cols-3 gap-3 p-10 max-w-9xl">
-    <!-- Dynamically injected Supabase images go here -->
+       class="grid grid-cols-1 md:grid-cols-3 gap-3 p-10 max-w-9xl w-full">
+    <!-- Images inserted dynamically -->
   </div>
 </main>
 
@@ -76,11 +76,17 @@
   </div>
 </div>
 
-<!-- Supabase Loader -->
+<!-- Supabase Image Loader -->
 <script>
+/* -------------------------
+   CONFIG
+-------------------------- */
 const SUPABASE_URL = "https://ygnfuztbwsngjihrinlr.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlnbmZ1enRid3NuZ2ppaHJpbmxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5ODUwOTMsImV4cCI6MjA3ODU2MTA5M30.YlKPGDE3hfF9mOIVbUEQQFtN8gwt6L0MOYldH1AOMGw";
+const SUPABASE_ANON_KEY = "YOUR_ANON_KEY_HERE";  // INSERT YOUR REAL ANON KEY
 
+/* -------------------------
+   FETCH IMAGES
+-------------------------- */
 async function fetchGalleryImages(gallery) {
   const url =
     `${SUPABASE_URL}/rest/v1/images?gallery=eq.${gallery}&select=*&order=created_at.desc`;
@@ -92,24 +98,38 @@ async function fetchGalleryImages(gallery) {
     },
   });
 
-  return await res.json();
+  return res.ok ? res.json() : [];
 }
 
+/* -------------------------
+   RENDER GALLERY
+-------------------------- */
 async function renderGallery(gallery, selector) {
   const container = document.querySelector(selector);
   const images = await fetchGalleryImages(gallery);
 
+  if (images.length === 0) {
+    container.innerHTML = `
+      <p class="text-gray-300 text-center col-span-full py-10">
+        No images uploaded yet.
+      </p>
+    `;
+    return;
+  }
+
   container.innerHTML = images.map(img => `
     <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"
          data-src="${img.image_url}">
-      <img src="${img.image_url}" class="w-full h-96 object-cover" alt="${img.title}">
+      <img src="${img.image_url}" class="w-full h-96 object-cover" alt="${img.title || ''}">
     </div>
   `).join("");
 
   initModalForCards();
 }
 
-/* Modal logic */
+/* -------------------------
+   MODAL LOGIC
+-------------------------- */
 function initModalForCards() {
   const modal = document.getElementById("image-modal");
   const modalImg = document.getElementById("modal-img");
@@ -136,15 +156,12 @@ function initModalForCards() {
   });
 }
 
+/* -------------------------
+   INITIALIZE PAGE
+-------------------------- */
 document.addEventListener("DOMContentLoaded", () => {
   renderGallery("gtwc2025", "#gtwc2025-gallery");
 });
-</script>
-<script src="/js/supabase.js"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    renderGallery("gtwc2025", "#gtwc2025-gallery");
-  });
 </script>
 
 </body>
