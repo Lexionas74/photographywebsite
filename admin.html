@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Upload - Stuart Clarkson Photography</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
@@ -12,140 +13,146 @@
     .hidden { display: none; }
   </style>
 </head>
+
 <body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center">
 
-  <!-- Login Section -->
+  <!-- LOGIN -->
   <div id="loginSection" class="text-center">
     <h1 class="text-3xl font-bold mb-4">Admin Login</h1>
-    <input type="password" id="passwordInput" placeholder="Enter Admin Password"
-           class="px-4 py-2 rounded-lg text-black" />
+    <input type="password" id="passwordInput" class="px-4 py-2 rounded-lg text-black"
+           placeholder="Enter Admin Password">
     <button id="loginButton"
-            class="ml-2 bg-purple-600 px-4 py-2 rounded-lg hover:bg-purple-700 transition">
+            class="ml-2 bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition">
       Login
     </button>
-    <p id="loginError" class="text-red-400 mt-2 hidden">Incorrect password.</p>
+    <p id="loginError" class="text-red-400 mt-3 hidden">Incorrect password</p>
   </div>
 
-  <!-- Upload Section -->
-  <div id="uploadSection" class="hidden text-center max-w-md w-full">
+  <!-- UPLOAD FORM -->
+  <div id="uploadSection" class="hidden text-center max-w-md w-full p-6 bg-gray-800 rounded-xl mt-6 shadow-xl">
     <h1 class="text-3xl font-bold mb-6">Upload New Image</h1>
 
     <form id="uploadForm" class="space-y-4">
+
       <div>
-        <label class="block mb-2 text-lg">Gallery name:</label>
-        <input type="text" id="galleryInput" name="gallery" required
-               placeholder="e.g. gtwc2025"
-               class="w-full px-4 py-2 rounded-lg text-black" />
+        <label class="block text-left mb-1">Gallery Name:</label>
+        <input type="text" id="galleryInput" class="w-full px-4 py-2 rounded-lg text-black"
+               placeholder="e.g. gtwc2025" required>
       </div>
 
       <div>
-        <label class="block mb-2 text-lg">Title (optional):</label>
-        <input type="text" id="titleInput" name="title"
-               placeholder="e.g. GT World Challenge Turn 1"
-               class="w-full px-4 py-2 rounded-lg text-black" />
+        <label class="block text-left mb-1">Image Title (optional):</label>
+        <input type="text" id="titleInput" class="w-full px-4 py-2 rounded-lg text-black"
+               placeholder="e.g. Turn 1 Battle">
       </div>
 
       <div>
-        <label class="block mb-2 text-lg">Select Image:</label>
-        <input type="file" id="fileInput" name="image" accept="image/*" required
-               class="w-full text-white" />
+        <label class="block text-left mb-1">Select Image:</label>
+        <input type="file" id="fileInput" accept="image/*" class="text-white" required>
       </div>
 
       <button type="submit"
-              class="bg-blue-600 hover:bg-blue-700 transition px-6 py-2 rounded-lg text-lg font-semibold">
-        Upload
+              class="bg-purple-600 hover:bg-purple-700 transition px-6 py-2 rounded-lg text-lg font-semibold">
+        Upload Image
       </button>
     </form>
 
+    <!-- PREVIEW -->
     <div id="previewSection" class="hidden mt-6">
       <p class="text-lg font-semibold">Upload Successful!</p>
-      <img id="previewImage" class="mt-3 rounded-xl max-h-96 mx-auto" />
-      <p class="mt-2 text-purple-400 break-all" id="imageUrl"></p>
+      <img id="previewImage" class="mt-3 rounded-xl max-h-96 mx-auto shadow-lg">
+      <p id="imageUrl" class="mt-2 text-purple-400 break-all"></p>
     </div>
   </div>
 
-  <script>
-    // -------- CONFIG (FILL THESE IN) --------
-    const ADMIN_PASSWORD = "password123";
-    const SUPABASE_FUNCTION_URL = "https://ygnfuztbwsngjihrinlr.functions.supabase.co/upload";
+<script>
+  // ------------------------------------------------------------
+  // CONFIG (FILL THESE IN)
+  // ------------------------------------------------------------
+  const ADMIN_PASSWORD = "123";  
+const SUPABASE_FUNCTION_URL = "https://ygnfuztbwsngjihrinlr.functions.supabase.co/upload";
 
-    // ----------------------------------------
+  // Example: https://ygnfuztbwsngjihrinlr.functions.supabase.co/upload
 
-    const loginSection = document.getElementById("loginSection");
-    const uploadSection = document.getElementById("uploadSection");
-    const loginButton = document.getElementById("loginButton");
-    const passwordInput = document.getElementById("passwordInput");
-    const loginError = document.getElementById("loginError");
 
-    loginButton.addEventListener("click", () => {
-      const input = passwordInput.value.trim();
-      if (input === ADMIN_PASSWORD) {
-        loginSection.classList.add("hidden");
-        uploadSection.classList.remove("hidden");
-        loginError.classList.add("hidden");
-      } else {
-        loginError.classList.remove("hidden");
-      }
-    });
+  // ------------------------------------------------------------
+  // LOGIN LOGIC
+  // ------------------------------------------------------------
+  const loginSection = document.getElementById("loginSection");
+  const uploadSection = document.getElementById("uploadSection");
+  const loginButton = document.getElementById("loginButton");
+  const passwordInput = document.getElementById("passwordInput");
+  const loginError = document.getElementById("loginError");
 
-    // Allow Enter key on password
-    passwordInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") loginButton.click();
-    });
+  loginButton.addEventListener("click", () => {
+    if (passwordInput.value.trim() === ADMIN_PASSWORD) {
+      loginSection.classList.add("hidden");
+      uploadSection.classList.remove("hidden");
+      loginError.classList.add("hidden");
+    } else {
+      loginError.classList.remove("hidden");
+    }
+  });
 
-    // Upload logic
-    const uploadForm = document.getElementById("uploadForm");
-    const previewSection = document.getElementById("previewSection");
-    const previewImage = document.getElementById("previewImage");
-    const imageUrl = document.getElementById("imageUrl");
+  // Allow ENTER key
+  passwordInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") loginButton.click();
+  });
 
-    uploadForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
 
-      const gallery = document.getElementById("galleryInput").value.trim();
-      const title = document.getElementById("titleInput").value.trim();
-      const fileInput = document.getElementById("fileInput");
-      const file = fileInput.files[0];
+  // ------------------------------------------------------------
+  // UPLOAD LOGIC
+  // ------------------------------------------------------------
+  const uploadForm = document.getElementById("uploadForm");
+  const fileInput = document.getElementById("fileInput");
+  const galleryInput = document.getElementById("galleryInput");
+  const titleInput = document.getElementById("titleInput");
 
-      if (!gallery) {
-        alert("Please enter a gallery name.");
+  const previewSection = document.getElementById("previewSection");
+  const previewImage = document.getElementById("previewImage");
+  const imageUrl = document.getElementById("imageUrl");
+
+  uploadForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const file = fileInput.files[0];
+    const gallery = galleryInput.value.trim();
+    const title = titleInput.value.trim();
+
+    if (!file) return alert("Please select an image first.");
+    if (!gallery) return alert("Gallery name is required.");
+
+    const formData = new FormData();
+    formData.append("gallery", gallery);
+    formData.append("title", title);
+    formData.append("image", file);
+
+    try {
+      const res = await fetch(SUPABASE_FUNCTION_URL, {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        console.error("Upload error:", data);
+        alert("Upload failed: " + (data.error || "Unknown error"));
         return;
       }
-      if (!file) {
-        alert("Please select a file.");
-        return;
-      }
 
-      const formData = new FormData();
-      formData.append("gallery", gallery);
-      formData.append("title", title);
-      formData.append("image", file);
+      // SUCCESS
+      previewSection.classList.remove("hidden");
+      previewImage.src = data.url;
+      imageUrl.textContent = data.url;
 
-      try {
-        const res = await fetch(SUPABASE_FUNCTION_URL, {
-          method: "POST",
-          body: formData,
-        });
+      fileInput.value = "";
+    } catch (err) {
+      console.error("Error:", err);
+      alert("Upload failed.");
+    }
+  });
+</script>
 
-        const data = await res.json();
-
-        if (!res.ok || !data.success) {
-          console.error("Upload error:", data);
-          alert("Upload failed: " + (data.error || "Unknown error"));
-          return;
-        }
-
-        previewSection.classList.remove("hidden");
-        previewImage.src = data.url;
-        imageUrl.textContent = data.url;
-
-        // Optional: reset the file input
-        fileInput.value = "";
-      } catch (err) {
-        console.error("Error uploading:", err);
-        alert("Error uploading image.");
-      }
-    });
-  </script>
 </body>
 </html>
