@@ -118,6 +118,121 @@ function initModal() {
 }
 
 document.addEventListener("DOMContentLoaded", renderGallery);
+
+(function () {
+  const modal = document.getElementById('image-modal');
+  const modalImg = document.getElementById('modal-img');
+  const closeBtn = document.getElementById('close-modal');
+  const cards = document.querySelectorAll('.card');
+
+  let clone;
+  let activeImage = null;
+  let originalRect = null;
+
+  function openModal(img) {
+    activeImage = img;
+    originalRect = img.getBoundingClientRect();
+    const body = document.body;
+
+    if (modal.classList.contains('active')) return;
+
+    // Create zoom clone
+    clone = img.cloneNode();
+    Object.assign(clone.style, {
+      position: 'fixed',
+      left: originalRect.left + 'px',
+      top: originalRect.top + 'px',
+      width: originalRect.width + 'px',
+      height: originalRect.height + 'px',
+      borderRadius: getComputedStyle(img).borderRadius,
+      objectFit: 'cover',
+      transition: 'all 0.45s cubic-bezier(0.23, 1, 0.32, 1)',
+      zIndex: '10000',
+      boxShadow: '0 0 30px rgba(0,0,0,0.6)',
+    });
+    body.appendChild(clone);
+
+    // Trigger animation
+    void clone.offsetWidth;
+
+    const targetW = Math.min(window.innerWidth * 0.8, 1000);
+    const targetH = Math.min(window.innerHeight * 0.8, targetW * (img.naturalHeight / img.naturalWidth));
+    const targetL = (window.innerWidth - targetW) / 2;
+    const targetT = (window.innerHeight - targetH) / 2;
+
+    modal.classList.add('active');
+    Object.assign(clone.style, {
+      left: targetL + 'px',
+      top: targetT + 'px',
+      width: targetW + 'px',
+      height: targetH + 'px',
+      borderRadius: '12px',
+    });
+
+    // After zoom finishes, fade in modal image
+    setTimeout(() => {
+      modalImg.src = img.dataset.src || img.src;
+      modalImg.onload = () => modalImg.classList.add('visible');
+      clone.remove();
+      body.style.overflow = 'hidden';
+    }, 450);
+  }
+
+  function closeModal() {
+    if (!activeImage || !modal.classList.contains('active')) return;
+
+    const body = document.body;
+    const imgRect = modalImg.getBoundingClientRect();
+    const reverse = modalImg.cloneNode();
+
+    Object.assign(reverse.style, {
+      position: 'fixed',
+      left: imgRect.left + 'px',
+      top: imgRect.top + 'px',
+      width: imgRect.width + 'px',
+      height: imgRect.height + 'px',
+      borderRadius: '12px',
+      transition: 'all 0.45s cubic-bezier(0.23, 1, 0.32, 1)',
+      zIndex: '10000',
+      boxShadow: '0 0 30px rgba(0,0,0,0.6)',
+    });
+
+    body.appendChild(reverse);
+
+    // Hide modal while reverse clone animates
+    modalImg.classList.remove('visible');
+
+    // Animate overlay fade slightly delayed for cinematic feel
+    setTimeout(() => modal.classList.remove('active'), 100);
+
+    const endRect = activeImage.getBoundingClientRect();
+    Object.assign(reverse.style, {
+      left: endRect.left + 'px',
+      top: endRect.top + 'px',
+      width: endRect.width + 'px',
+      height: endRect.height + 'px',
+      borderRadius: getComputedStyle(activeImage).borderRadius,
+    });
+
+    setTimeout(() => {
+      reverse.remove();
+      modalImg.src = '';
+      body.style.overflow = '';
+      activeImage = null;
+    }, 450);
+  }
+
+  // Event bindings
+  cards.forEach(card => {
+    const img = card.querySelector('img');
+    if (!img) return;
+    card.addEventListener('click', () => openModal(img));
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  window.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+})();
 </script>
     <section class="relative left-1/2 transform -translate-x-1/2 w-screen flex justify-center mt-16 mb-10">  
         <a href="#" class="transform hover:scale-105 inline-block bg-gray-800 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full transition-all duration-300">Back To Top</a>
