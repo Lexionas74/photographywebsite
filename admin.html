@@ -7,12 +7,18 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- CONFIG MUST LOAD BEFORE supabase.js -->
+  <script>
+    const SUPABASE_URL = "https://ygnfuztbwsngjihrinlr.supabase.co";
+    const SUPABASE_ANON_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlnbmZ1enRid3NuZ2ppaHJpbmxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5ODUwOTMsImV4cCI6MjA3ODU2MTA5M30.YlKPGDE3hfF9mOIVbUEQQFtN8gwt6L0MOYldH1AOMGw";
+  </script>
+
   <script src="/js/supabase.js"></script>
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Poppins', sans-serif; }
-  </style>
+  <style> body { font-family: 'Poppins', sans-serif; } </style>
 </head>
 
 <body class="bg-gray-900 text-white min-h-screen p-6">
@@ -66,7 +72,6 @@
 
       </form>
 
-      <!-- Upload Preview -->
       <div id="previewSection" class="hidden mt-6 text-center">
         <p class="text-lg font-semibold">Upload Successful!</p>
         <img id="previewImage" class="mt-3 rounded-xl max-h-96 mx-auto shadow-lg">
@@ -91,24 +96,17 @@
         </thead>
         <tbody id="deleteTable"></tbody>
       </table>
-
     </div>
 
-  </div> <!-- end adminPanel -->
+  </div>
 
 
 <script>
 /* ============================================================
-   CONFIG
+   ADMIN LOGIN
 ============================================================ */
-const ADMIN_PASSWORD = "123"; // change this
-const DELETE_FUNCTION_URL = "https://ygnfuztbwsngjihrinlr.functions.supabase.co/delete";
-const UPLOAD_FUNCTION_URL = "https://ygnfuztbwsngjihrinlr.functions.supabase.co/upload";
+const ADMIN_PASSWORD = "123";
 
-
-/* ============================================================
-   LOGIN LOGIC
-============================================================ */
 document.getElementById("loginButton").onclick = () => {
   const pass = document.getElementById("passwordInput").value.trim();
 
@@ -123,7 +121,7 @@ document.getElementById("loginButton").onclick = () => {
 
 
 /* ============================================================
-   UPLOAD LOGIC
+   UPLOAD IMAGE (Edge Function)
 ============================================================ */
 document.getElementById("uploadForm").addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -137,68 +135,80 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
   formData.append("title", title);
   formData.append("image", file);
 
-  const res = await fetch(UPLOAD_FUNCTION_URL, {
-    method: "POST",
-    body: formData
-  });
+  const res = await fetch(
+    "https://ygnfuztbwsngjihrinlr.functions.supabase.co/upload",
+    { method: "POST", body: formData }
+  );
 
   const data = await res.json();
-
   if (!data.success) return alert("Upload failed.");
 
   document.getElementById("previewSection").classList.remove("hidden");
   document.getElementById("previewImage").src = data.url;
   document.getElementById("imageUrl").textContent = data.url;
 
-  loadDeleteTable(); // refresh table
+  loadDeleteTable();
 });
 
 
 /* ============================================================
-   DELETE TABLE LOADING
+   LOAD DELETE TABLE
 ============================================================ */
 async function loadDeleteTable() {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/images?select=*`, {
-    headers: {
-      apikey: SUPABASE_ANON_KEY,
-      Authorization: `Bearer ${SUPABASE_ANON_KEY}`
-    }
-  });
+  console.log("Fetching images...");
 
-  const images = await res.json();
+  const { data: images, error } = await supabase
+    .from("images")
+    .select("*")
+    .order("id", { ascending: true });
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  console.log("Loaded images:", images);
+
   const table = document.getElementById("deleteTable");
   table.innerHTML = "";
 
-images.forEach(img => {
-  // FIXED: correct extraction of storage path
-  const storagePath = img.image_url.split("/images/")[1];
+  images.forEach(img => {
+    const storagePath = img.image_url.split("/object/public/images/")[1];
 
-  const row = document.createElement("tr");
-  row.innerHTML = `
-    <td class="p-2">${img.id}</td>
-    <td class="p-2">${img.gallery}</td>
-    <td class="p-2">${img.title ?? ""}</td>
-    <td class="p-2"><img src="${img.image_url}" class="h-20 rounded"></td>
-    <td class="p-2">
-      <button onclick="deleteImage(${img.id}, '${storagePath}')"
-        class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded">
-        Delete
-      </button>
-    </td>
-  `;
-  table.appendChild(row);
-});
-
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td class="p-2">${img.id}</td>
+      <td class="p-2">${img.gallery}</td>
+      <td class="p-2">${img.title ?? ""}</td>
+      <td class="p-2">
+        <img src="${img.image_url}" class="h-20 rounded">
+      </td>
+      <td class="p-2">
+        <button onclick="deleteImage(${img.id}, '${storagePath}')"
+          class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded">
+          Delete
+        </button>
+      </td>
+    `;
+    table.appendChild(row);
+  });
 }
 
+
+/* ============================================================
+   DELETE IMAGE (Edge Function)
+============================================================ */
 async function deleteImage(id, storagePath) {
   if (!confirm("Delete this image permanently?")) return;
 
-  const res = await fetch(SUPABASE_FUNCTION_DELETE, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id, storagePath })
-  });
+  const res = await fetch(
+    "https://ygnfuztbwsngjihrinlr.functions.supabase.co/delete",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, storagePath })
+    }
+  );
 
   const data = await res.json();
 
