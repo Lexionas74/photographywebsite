@@ -162,45 +162,48 @@ uploadForm.addEventListener("submit", async (e) => {
 
 /* LOAD TABLE */
 async function loadDeleteTable() {
+  console.log("Loading delete table...");
+
   const { data: images, error } = await supabase
     .from("images")
     .select("*")
-    .order("gallery")
-    .order("sort_order")
-    .order("id");
+    .order("sort_order", { ascending: true });
 
-  deleteTable.innerHTML = "";
+  if (error) {
+    console.error("Error loading images:", error);
+    alert("Failed to load images: " + error.message);
+    return;
+  }
+
+  if (!images || images.length === 0) {
+    console.warn("No images found in database.");
+    document.getElementById("deleteTable").innerHTML =
+      `<tr><td colspan="5" class="p-4 text-center text-gray-400">No images found</td></tr>`;
+    return;
+  }
+
+  const table = document.getElementById("deleteTable");
+  table.innerHTML = "";
 
   images.forEach(img => {
-    const row = document.createElement("tr");
-    row.dataset.id = img.id;
-    row.dataset.gallery = img.gallery;
+    const storagePath = img.image_url.split("/object/public/images/")[1];
 
+    const row = document.createElement("tr");
     row.innerHTML = `
       <td class="p-2">${img.id}</td>
       <td class="p-2">${img.gallery}</td>
       <td class="p-2">${img.title || ""}</td>
       <td class="p-2"><img src="${img.image_url}" class="h-20 rounded"></td>
       <td class="p-2">
-        <button class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded"
-          onclick="deleteImage(${img.id}, '${img.image_url.split("/object/public/images/")[1]}')">
+        <button onclick="deleteImage(${img.id}, '${storagePath}')"
+          class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded">
           Delete
         </button>
       </td>
     `;
-
-    deleteTable.appendChild(row);
+    table.appendChild(row);
   });
-
-  if (sortingEnabled) attachDragHandlers();
 }
-
-/* SORTING */
-enableSortBtn.addEventListener("click", () => {
-  sortingEnabled = true;
-  saveSortBtn.classList.remove("hidden");
-  attachDragHandlers();
-});
 
 function attachDragHandlers() {
   const rows = deleteTable.querySelectorAll("tr");
