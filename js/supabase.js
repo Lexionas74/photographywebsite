@@ -1,6 +1,5 @@
 // /js/supabase.js
-// DO NOT PUT SUPABASE_URL OR KEYS HERE.
-// They MUST be defined in admin.html BEFORE this file loads.
+// DO NOT put keys, URLs, or anything else here.
 
 const supabase = window.supabase.createClient(
   SUPABASE_URL,
