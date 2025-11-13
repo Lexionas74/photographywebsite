@@ -1,5 +1,5 @@
 // /js/supabase.js
-
+alert("supabase.js LOADED");
 const SUPABASE_URL = "https://ygnfuztbwsngjihrinlr.supabase.co";
 
 const SUPABASE_ANON_KEY =
