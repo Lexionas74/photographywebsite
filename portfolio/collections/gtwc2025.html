@@ -103,7 +103,7 @@
         class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"
         data-src="${img.image_url}"
       >
-        <img src="${img.image_url}" alt="${img.title || ""}" class="w-full h-96 object-cover" />
+        <img src="${img.image_url}" alt="${img.title || ""}" class="w-full aspect-[3/2] object-cover rounded-xl"/>
       </div>
     `).join("");
 
