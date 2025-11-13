@@ -41,8 +41,7 @@
 
 <!-- Gallery -->
 <main class="flex justify-center items-center min-h-screen">
-  <div id="gtwc2025-gallery"
-       class="grid grid-cols-1 md:grid-cols-3 gap-3 p-10 max-w-7xl">
+  <div id="gtwc2025-gallery" class="grid grid-cols-1 md:grid-cols-3 gap-3 p-10 max-w-1500px">
   </div>
 </main>
 
@@ -82,12 +81,16 @@ async function renderGallery() {
   const container = document.getElementById("gtwc2025-gallery");
   const images = await fetchGalleryImages("gtwc2025");
 
-  container.innerHTML = images.map(img => `
-    <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"
-         data-src="${img.image_url}">
-      <img src="${img.image_url}" class="w-full h-96 object-cover">
+container.innerHTML = images.map(img => `
+  <div 
+    class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"
+    data-src="${img.image_url}"
+  >
+    <div class="w-full" style="aspect-ratio: 3/2;">
+      <img src="${img.image_url}" class="w-full h-full object-cover">
     </div>
-  `).join("");
+  </div>
+`).join("");
 
   initModal();
 }
