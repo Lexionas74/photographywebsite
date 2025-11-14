@@ -162,7 +162,7 @@ function initZoomModal() {
       // Animate into center
       setTimeout(() => {
         const targetW = Math.min(window.innerWidth * 1, 1100);
-        const targetH = targetW * 1;
+        const targetH = targetW * 0.6667; // Assuming 3:2 aspect ratio
         const targetL = (window.innerWidth - targetW) / 2;
         const targetT = (window.innerHeight - targetH) / 2;
 
