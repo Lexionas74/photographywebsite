@@ -112,9 +112,9 @@ document.getElementById("loginButton").onclick = async () => {
   const pass = document.getElementById("passwordInput").value.trim();
   const errorEl = document.getElementById("loginError");
 
-  if (!pass) return;
+  // Hide old error
+  errorEl.classList.add("hidden");
 
-  // Call secure backend login
   const res = await fetch("https://ygnfuztbwsngjihrinlr.functions.supabase.co/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -124,25 +124,17 @@ document.getElementById("loginButton").onclick = async () => {
   const data = await res.json();
 
   if (!data.success) {
-    // Show error
-    errorEl.classList.remove("hidden");
-    setTimeout(() => {
-      errorEl.classList.remove("opacity-0");
-    }, 10);
-
+    errorEl.classList.remove("hidden");  // ← THIS SHOWS THE ERROR
     return;
   }
 
-  // Hide error if previously shown
-  errorEl.classList.add("opacity-0");
-  setTimeout(() => errorEl.classList.add("hidden"), 300);
-
-  // SUCCESS: unlock admin panel
+  // SUCCESS — show admin
   document.getElementById("loginSection").classList.add("hidden");
   document.getElementById("adminPanel").classList.remove("hidden");
 
   loadDeleteTable();
 };
+
 
 
 /* ---------------------------------------------
