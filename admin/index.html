@@ -29,7 +29,8 @@
     Login
   </button>
 
-  <p id="loginError" class="text-red-400 mt-3 hidden">Incorrect password</p>
+  <p id="loginError" class="text-red-400 mt-3 hidden opacity-0 transition-opacity duration-300">Incorrect password. Please try again.</p>
+
 </div>
 
 <!-- PANEL -->
@@ -109,9 +110,11 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 ----------------------------------------------*/
 document.getElementById("loginButton").onclick = async () => {
   const pass = document.getElementById("passwordInput").value.trim();
+  const errorEl = document.getElementById("loginError");
+
   if (!pass) return;
 
-  // Validate against secure Edge Function
+  // Call secure backend login
   const res = await fetch("https://ygnfuztbwsngjihrinlr.functions.supabase.co/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -121,16 +124,26 @@ document.getElementById("loginButton").onclick = async () => {
   const data = await res.json();
 
   if (!data.success) {
-    document.getElementById("loginError").classList.remove("hidden");
+    // Show error
+    errorEl.classList.remove("hidden");
+    setTimeout(() => {
+      errorEl.classList.remove("opacity-0");
+    }, 10);
+
     return;
   }
 
-  // SUCCESS – show admin panel
+  // Hide error if previously shown
+  errorEl.classList.add("opacity-0");
+  setTimeout(() => errorEl.classList.add("hidden"), 300);
+
+  // SUCCESS: unlock admin panel
   document.getElementById("loginSection").classList.add("hidden");
   document.getElementById("adminPanel").classList.remove("hidden");
 
   loadDeleteTable();
 };
+
 
 /* ---------------------------------------------
    UPLOAD LOGIC (SECURE)
