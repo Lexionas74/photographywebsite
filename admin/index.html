@@ -107,17 +107,30 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 /* ---------------------------------------------
    LOGIN SYSTEM (PASSWORD CHECKED SERVER-SIDE)
 ----------------------------------------------*/
-document.getElementById("loginButton").onclick = () => {
+document.getElementById("loginButton").onclick = async () => {
   const pass = document.getElementById("passwordInput").value.trim();
-  if (pass.length === 0) return;
+  if (!pass) return;
 
-  // Authentication happens in the Edge Function — not here.
+  // Validate against secure Edge Function
+  const res = await fetch("https://ygnfuztbwsngjihrinlr.functions.supabase.co/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password: pass })
+  });
+
+  const data = await res.json();
+
+  if (!data.success) {
+    document.getElementById("loginError").classList.remove("hidden");
+    return;
+  }
+
+  // SUCCESS – show admin panel
   document.getElementById("loginSection").classList.add("hidden");
   document.getElementById("adminPanel").classList.remove("hidden");
 
   loadDeleteTable();
 };
-
 
 /* ---------------------------------------------
    UPLOAD LOGIC (SECURE)
