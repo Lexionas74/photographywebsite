@@ -106,6 +106,8 @@ function initZoomModal() {
 
       const rect = img.getBoundingClientRect();
       clone = img.cloneNode();
+      clone.classList.add("zoom-clone");
+
 
       Object.assign(clone.style, {
         position: "fixed",
@@ -147,42 +149,18 @@ function initZoomModal() {
   });
 
   function closeModal() {
-    if (!activeImg) return;
+  // Allow closing even if animation did not fully finish
+  modal.classList.add("hidden");
+  document.body.style.overflow = "";
 
-    const rect = activeImg.getBoundingClientRect();
-    const anim = modalImg.cloneNode();
+  // Reset modal image
+  modalImg.src = "";
 
-    Object.assign(anim.style, {
-      position: "fixed",
-      top: rect.top + "px",
-      left: rect.left + "px",
-      width: rect.width + "px",
-      height: rect.height + "px",
-      borderRadius: "12px",
-      objectFit: "cover",
-      zIndex: "99999",
-      transition: "all .45s cubic-bezier(0.23,1,0.32,1)"
-    });
+  // Reset state
+  activeImg = null;
 
-    document.body.appendChild(anim);
-
-    modal.classList.add("hidden");
-    modalImg.src = "";
-
-    setTimeout(() => {
-      Object.assign(anim.style, {
-        top: rect.top + "px",
-        left: rect.left + "px",
-        width: rect.width + "px",
-        height: rect.height + "px"
-      });
-    }, 10);
-
-    setTimeout(() => {
-      anim.remove();
-      document.body.style.overflow = "";
-      activeImg = null;
-    }, 450);
+  // Remove any clones left behind
+  document.querySelectorAll(".zoom-clone").forEach(c => c.remove());
   }
 
   closeBtn.addEventListener("click", closeModal);
