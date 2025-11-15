@@ -3,128 +3,122 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sandown 300 2025 - Stuart Clarkson Photography</title>
+  <title>GT World Challenge Round 7&8 2025 - Stuart Clarkson Photography</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-<style>
-  #image-modal {
-    opacity: 0;
-    transition: opacity 0.45s ease-in-out;
-    pointer-events: none;
-    z-index: 9999;
-  }
-  #image-modal.active {
-    opacity: 1 !important;
-    pointer-events: all !important;
-  }
 
-  #modal-img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    border-radius: 12px;
-    opacity: 0;
-    transition: opacity 0s ease-in-out;
-  }
-  #modal-img.visible {
-    opacity: 1;
-  }
-
-  .card { cursor: pointer; }
-  #close-modal {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-  }
-</style>
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .card { cursor: pointer; }
+    #image-modal { transition: opacity 0.25s ease; opacity: 0; }
+    #image-modal:not(.hidden) { opacity: 1; }
+    #modal-inner { transform: translateY(10px); transition: transform .25s ease; }
+    #image-modal:not(.hidden) #modal-inner { transform: translateY(0); }
+    #close-modal { font-size: 2.5rem; cursor: pointer; transition: .2s; }
+    #close-modal:hover { color: #60a5fa; transform: scale(1.15); }
+  </style>
 </head>
+
 <body class="bg-gradient-to-r from-gray-900 via-black-900 to-blue-900 text-white">
-  <!-- Header -->
-  <header class="flex justify-between items-center p-5">
-    <a href="https://stuartclarksonphotography.com" class="text-3xl font-bold">Stuart Clarkson</a>
-    <nav>
-      <ul class="flex space-x-6 text-lg">
-        <li><a href="https://stuartclarksonphotography.com/portfolio" class="hover:text-purple-300">Portfolio</a></li>
-        <li><a href="https://stuartclarksonphotography.com/socials" class="hover:text-purple-300">Socials</a></li>
-      </ul>
-    </nav>
-  </header>
 
-  <!-- Main Content -->
-  <br>
-  <center><p class="text-2xl font-bold">2025 Porsche Sandown 300</p></center>
-  <center><p class="py-5"><strong>Gear Used</strong><br>Camera: Canon EOS R50 <br>Lens: Canon EF 70-300 f4-5.6 & Canon RF-S 18-45 5.6-6.5</p></center>
-  <main class="flex justify-center items-center min-h-screen">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 p-10 max-w-7xl">
-    
-         <div class="bg-gray-800 rounded-xl overflow-hidden transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card" data-src="images/sandown3002025/sjcphotography-42.jpg">
-           <img src="images/sandown3002025/sjcphotography-42.jpg" alt="aroca 2025" class="w-full h-96 object-cover">
-         </div>
-         
-         <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"data-src="images/sandown3002025/sjcphotography-54.jpg">
-           <img src="images/sandown3002025/sjcphotography-54.jpg" alt="aroca 2025" class="w-full h-96 object-cover">
-         </div>
-
-         <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"data-src="images/sandown3002025/sjcphotography-55.jpg">
-           <img src="images/sandown3002025/sjcphotography-55.jpg" alt="aroca 2025" class="w-full h-96 object-cover">
-         </div>
-
-         <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"data-src="images/sandown3002025/sjcphotography-56.jpg">
-           <img src="images/sandown3002025/sjcphotography-56.jpg" alt="aroca 2025" class="w-full h-96 object-cover">
-         </div>
-
-         <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"data-src="images/sandown3002025/sjcphotography-57.jpg">
-           <img src="images/sandown3002025/sjcphotography-57.jpg" alt="aroca 2025" class="w-full h-96 object-cover">
-         </div>
-
-          <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"data-src="images/sandown3002025/sjcphotography-71.jpg">
-            <img src="images/sandown3002025/sjcphotography-71.jpg" alt="aroca 2025" class="w-full h-96 object-cover">
-          </div>
-        
-          <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"data-src="images/sandown3002025/sjcphotography-75.jpg">
-            <img src="images/sandown3002025/sjcphotography-75.jpg" alt="aroca 2025" class="w-full h-96 object-cover">
-          </div>
-
-          <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"data-src="images/sandown3002025/sjcphotography-76.jpg">
-            <img src="images/sandown3002025/sjcphotography-76.jpg" alt="aroca 2025" class="w-full h-96 object-cover">
-          </div>
-
-          <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"data-src="images/sandown3002025/sjcphotography-77.jpg">
-            <img src="images/sandown3002025/sjcphotography-77.jpg" alt="aroca 2025" class="w-full h-96 object-cover">
-          </div>
-
-          <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"data-src="images/sandown3002025/sjcphotography-78.jpg">
-            <img src="images/sandown3002025/sjcphotography-78.jpg" alt="aroca 2025" class="w-full h-96 object-cover">
-          </div>
-
-          <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"data-src="images/sandown3002025/sjcphotography-79.jpg">
-            <img src="images/sandown3002025/sjcphotography-79.jpg" alt="aroca 2025" class="w-full h-96 object-cover">
-          </div>
-
-          <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"data-src="images/sandown3002025/sjcphotography-80.jpg">
-            <img src="images/sandown3002025/sjcphotography-80.jpg" alt="aroca 2025" class="w-full h-96 object-cover">
-          </div>
-    </main>
+<!-- Header -->
+<header class="flex justify-between items-center p-5">
+  <a href="https://stuartclarksonphotography.com" class="text-3xl font-bold">Stuart Clarkson</a>
+  <nav>
+    <ul class="flex space-x-6 text-lg">
+      <li><a href="/portfolio" class="hover:text-blue-600">Portfolio</a></li>
+      <li><a href="/socials" class="hover:text-blue-600">Socials</a></li>
+    </ul>
+  </nav>
+</header>
 
 
-<div id="image-modal"
-     class="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[9999]"
-     style="opacity:0; pointer-events:none;">
-  <button id="close-modal"
-          aria-label="Close"
-          class="absolute top-5 right-6 text-white text-4xl font-bold hover:text-blue-300 z-[10000]">×</button>
-  <div id="modal-inner" class="max-w-5xl w-full p-4 flex justify-center items-center">
-    <img id="modal-img" src="" alt="Full view"
-         class="rounded-xl w-full h-auto max-h-[90vh] object-contain shadow-lg">
+<center><p class="text-2xl font-bold">2025 GT World Challenge Round 7&8</p></center>
+<center><p class="py-5"><strong>Gear Used</strong><br>Camera: Canon EOS R50 <br>Lens: Canon EF 70-300 f4-5.6 & Canon EF 24-70 f4</p></center>
+
+
+<main class="flex justify-center items-center min-h-screen">
+  <div id="gtwc2025-gallery" class="grid grid-cols-1 md:grid-cols-3 gap-3 p-10 max-w-1500px">
+  </div>
+</main>
+
+
+<div id="image-modal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 hidden flex items-center justify-center">
+  <div id="modal-inner" class="relative max-w-5xl w-full p-4">
+    <span id="close-modal" class="absolute top-4 right-6 text-white">×</span>
+    <img id="modal-img" src="" class="rounded-xl w-full h-auto max-h-[90vh] object-contain shadow-xl" />
   </div>
 </div>
 
 
-</div>
-</div>
 <script>
+const SUPABASE_URL = "https://ygnfuztbwsngjihrinlr.supabase.co";
+const SUPABASE_ANON_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlnbmZ1enRid3NuZ2ppaHJpbmxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5ODUwOTMsImV4cCI6MjA3ODU2MTA5M30.YlKPGDE3hfF9mOIVbUEQQFtN8gwt6L0MOYldH1AOMGw";
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+async function fetchGalleryImages(gallery) {
+  const { data, error } = await supabase
+    .from("images")
+    .select("*")
+    .eq("gallery", gallery)
+    .order("sort_order", { ascending: true });
+
+  if (error) {
+    console.error("Error loading gallery:", error);
+    return [];
+  }
+  return data;
+}
+async function renderGallery() {
+  const container = document.getElementById("gtwc2025-gallery");
+  const images = await fetchGalleryImages("gtwc2025");
+/*If you want square photos, etc, change style="aspect-ratio:3/2;" to whatever you want */
+container.innerHTML = images.map(img => `
+<div  
+    class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"
+    data-src="${img.image_url}"
+  >
+    <div class="w-full" style="aspect-ratio: 3/2;">
+      <img src="${img.image_url}" class="w-full h-full object-cover">
+    </div>
+  </div>
+`).join("");
+
+  initModal();
+}
+function initModal() {
+  const modal = document.getElementById("image-modal");
+  const modalImg = document.getElementById("modal-img");
+  const closeModal = document.getElementById("close-modal");
+
+  document.querySelectorAll(".card").forEach(card => {
+    card.addEventListener("click", () => {
+      modalImg.src = card.dataset.src;
+      modal.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    });
+  });
+
+  closeModal.addEventListener("click", () => {
+    modal.classList.add("hidden");
+    document.body.style.overflow = "";
+  });
+
+  modal.addEventListener("click", e => {
+    if (e.target === modal) {
+      modal.classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", renderGallery);
+
 (function () {
   const modal = document.getElementById('image-modal');
   const modalImg = document.getElementById('modal-img');
@@ -244,7 +238,4 @@
         <a href="#" class="transform hover:scale-105 inline-block bg-gray-800 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full transition-all duration-300">Back To Top</a>
     </section>
 </body>
-    <footer class="bg-gray-800 text-center py-6 mt-10">
-      <p>&copy; 2025 Stuart Clarkson Photography. All rights reserved.</p>
-    </footer>
 </html>
