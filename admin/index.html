@@ -112,7 +112,6 @@ document.getElementById("loginButton").onclick = async () => {
   const pass = document.getElementById("passwordInput").value.trim();
   const errorEl = document.getElementById("loginError");
 
-  // Hide old error
   errorEl.classList.add("hidden");
 
   const res = await fetch("https://ygnfuztbwsngjihrinlr.functions.supabase.co/login", {
@@ -124,16 +123,18 @@ document.getElementById("loginButton").onclick = async () => {
   const data = await res.json();
 
   if (!data.success) {
-    errorEl.classList.remove("hidden");  // ← THIS SHOWS THE ERROR
+    errorEl.classList.remove("hidden");
+    errorEl.style.opacity = "1";
     return;
   }
 
-  // SUCCESS — show admin
+  // Login success → show admin panel
   document.getElementById("loginSection").classList.add("hidden");
   document.getElementById("adminPanel").classList.remove("hidden");
 
   loadDeleteTable();
 };
+
 
 
 
