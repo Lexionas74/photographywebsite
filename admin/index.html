@@ -294,9 +294,6 @@
         return;
       }
 
-      // Ask for admin password for upload (checked server-side)
-      const adminPassword = prompt("Enter admin password to upload:");
-      if (!adminPassword) return;
 
       const formData = new FormData();
       formData.append("gallery", gallery);
