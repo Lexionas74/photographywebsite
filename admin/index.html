@@ -29,7 +29,8 @@
     Login
   </button>
 
-  <p id="loginError" class="text-red-400 mt-3 hidden opacity-0 transition-opacity duration-300">Incorrect password. Please try again.</p>
+<p id="loginError" class="text-red-400 mt-3 hidden transition-opacity duration-300 opacity-0">
+
 
 </div>
 
@@ -112,27 +113,41 @@ document.getElementById("loginButton").onclick = async () => {
   const pass = document.getElementById("passwordInput").value.trim();
   const errorEl = document.getElementById("loginError");
 
+  // Hide old error
   errorEl.classList.add("hidden");
+  errorEl.classList.remove("opacity-100");
+  errorEl.classList.add("opacity-0");
 
-  const res = await fetch("https://ygnfuztbwsngjihrinlr.functions.supabase.co/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ password: pass })
-  });
+  try {
+    const res = await fetch("https://ygnfuztbwsngjihrinlr.functions.supabase.co/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: pass })
+    });
 
-  const data = await res.json();
+    const data = await res.json();
+    console.log("Login response:", data); // DEBUG
 
-  if (!data.success) {
+    if (!data.success) {
+      // SHOW ERROR PROPERLY
+      errorEl.classList.remove("hidden");
+      errorEl.classList.remove("opacity-0");
+      errorEl.classList.add("opacity-100");
+      return;
+    }
+
+    // SUCCESS
+    document.getElementById("loginSection").classList.add("hidden");
+    document.getElementById("adminPanel").classList.remove("hidden");
+    loadDeleteTable();
+
+  } catch (err) {
+    console.error("Login failed:", err);
+    errorEl.textContent = "Network error — check function logs.";
     errorEl.classList.remove("hidden");
-    errorEl.style.opacity = "1";
-    return;
+    errorEl.classList.remove("opacity-0");
+    errorEl.classList.add("opacity-100");
   }
-
-  // Login success → show admin panel
-  document.getElementById("loginSection").classList.add("hidden");
-  document.getElementById("adminPanel").classList.remove("hidden");
-
-  loadDeleteTable();
 };
 
 
