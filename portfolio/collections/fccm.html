@@ -3,222 +3,205 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fox Classic Car Musuem - Stuart Clarkson Photography</title>
+  <title>GT World Challenge Round 7&8 2025 - Stuart Clarkson Photography</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-<style>
-  #image-modal {
-    opacity: 0;
-    transition: opacity 0.45s ease-in-out;
-    pointer-events: none;
-    z-index: 9999;
-  }
-  #image-modal.active {
-    opacity: 1 !important;
-    pointer-events: all !important;
-  }
 
-  #modal-img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    border-radius: 12px;
-    opacity: 0;
-    transition: opacity 0s ease-in-out;
-  }
-  #modal-img.visible {
-    opacity: 1;
-  }
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .card { cursor: pointer; }
 
-  .card { cursor: pointer; }
-  #close-modal {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-  }
-</style>
+    /* Modal base */
+    #image-modal {
+      opacity: 0;
+      transition: opacity 0.45s ease-in-out;
+      pointer-events: none; /* disabled until opened */
+      z-index: 9999;
+    }
+
+    /* Modal visible */
+    #image-modal:not(.hidden) {
+      opacity: 1;
+      pointer-events: auto; /* FIX: enables clicking X button */
+    }
+
+    #close-modal {
+      font-size: 2rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    #close-modal:hover {
+      color: #60a5fa;
+      transform: scale(1.15);
+    }
+
+    /* Smooth up animation */
+    #modal-inner {
+      transform: translateY(10px);
+      transition: transform 0.25s ease;
+    }
+    #image-modal:not(.hidden) #modal-inner {
+      transform: translateY(0);
+    }
+  </style>
 </head>
+
 <body class="bg-gradient-to-r from-gray-900 via-black-900 to-blue-900 text-white">
-  <!-- Header -->
-  <header class="flex justify-between items-center p-5">
-    <a href="https://stuartclarksonphotography.com" class="text-3xl font-bold">Stuart Clarkson</a>
-    <nav>
-      <ul class="flex space-x-6 text-lg">
-        <li><a href="https://stuartclarksonphotography.com/portfolio" class="hover:text-purple-300">Portfolio</a></li>
-        <li><a href="https://stuartclarksonphotography.com/socials" class="hover:text-purple-300">Socials</a></li>
-      </ul>
-    </nav>
-  </header>
 
-  <!-- Main Content -->
-  <br>
-  <center><p class="text-2xl font-bold">Fox Classic Car Musuem</p></center>
-  <center><p class="py-5"><strong>Gear Used</strong><br>Camera: Nikon D60 <br>Lens: Nikorr 18-55 f3.5-5.6</f4-5></p></center>
-  <main class="flex justify-center items-center min-h-screen">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 p-10 max-w-7xl">
-      <!-- Card 1 -->
-      <div class="bg-gray-800 rounded-xl overflow-hidden transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card" data-src="images/fccm/DSC_1202.jpg">
-        <img src="images/fccm/DSC_1202.jpg" alt="aus gp 2024" class="w-full h-96 object-cover">
-      </div>
-      
-      <!-- Card 2 -->
-      <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"data-src="images/fccm/sjcphotography--18.jpg">
-        <img src="images/fccm/sjcphotography--18.jpg" width="1000" alt="ausgp2024" class="w-full h-96 object-cover">
+<!-- Header -->
+<header class="flex justify-between items-center p-5">
+  <a href="https://stuartclarksonphotography.com" class="text-3xl font-bold">Stuart Clarkson</a>
+  <nav>
+    <ul class="flex space-x-6 text-lg">
+      <li><a href="/portfolio" class="hover:text-blue-600">Portfolio</a></li>
+      <li><a href="/socials" class="hover:text-blue-600">Socials</a></li>
+    </ul>
+  </nav>
+</header>
 
-      </div>
+<!-- Title -->
+<center><p class="text-2xl font-bold">2025 GT World Challenge Round 7&8</p></center>
+<center><p class="py-5">
+  <strong>Gear Used</strong><br>
+  Camera: Canon EOS R50 <br>
+  Lens: Canon EF 70-300 f4-5.6 & Canon EF 24-70 f4
+</p></center>
 
-      <!-- Card 3 -->
-      <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"data-src="images/fccm/sjcphotography-4.jpg">
-        <img src="images/fccm/sjcphotography-4.jpg" alt="zoo" class="w-full h-96 object-cover">
+<!-- Gallery -->
+<main class="flex justify-center items-center min-h-screen">
+  <div id="gtwc2025-gallery"
+       class="grid grid-cols-1 md:grid-cols-3 gap-3 p-10 max-w-[1500px]">
+  </div>
+</main>
 
-      </div>
-    <!-- Card 4 -->
-      <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 card"data-src="images/fccm/sjcphotography-1165.jpg">
-        <img src="images/fccm/sjcphotography-1165.jpg" alt="car musuem" class="w-full h-96 object-cover">
-      </div>
-
-
-    </main>
-
-
+<!-- Modal -->
 <div id="image-modal"
-     class="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[9999]"
-     style="opacity:0; pointer-events:none;">
-  <button id="close-modal"
-          aria-label="Close"
-          class="absolute top-5 right-6 text-white text-4xl font-bold hover:text-blue-300 z-[10000]">×</button>
-  <div id="modal-inner" class="max-w-5xl w-full p-4 flex justify-center items-center">
-    <img id="modal-img" src="" alt="Full view"
-         class="rounded-xl w-full h-auto max-h-[90vh] object-contain shadow-lg">
+     class="fixed inset-0 bg-black/60 backdrop-blur-md hidden flex items-center justify-center">
+  <div id="modal-inner" class="relative max-w-5xl w-full p-4">
+    <span id="close-modal" class="absolute top-4 right-6 text-white">×</span>
+    <img id="modal-img" src=""
+         class="rounded-xl w-full h-auto max-h-[90vh] object-contain shadow-xl" />
   </div>
 </div>
 
-
-</div>
-</div>
 <script>
-(function () {
-  const modal = document.getElementById('image-modal');
-  const modalImg = document.getElementById('modal-img');
-  const closeBtn = document.getElementById('close-modal');
-  const cards = document.querySelectorAll('.card');
+/* Supabase connection */
+const SUPABASE_URL = "https://ygnfuztbwsngjihrinlr.supabase.co";
+const SUPABASE_ANON_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlnbmZ1enRid3NuZ2ppaHJpbmxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5ODUwOTMsImV4cCI6MjA3ODU2MTA5M30.YlKPGDE3hfF9mOIVbUEQQFtN8gwt6L0MOYldH1AOMGw";
 
-  let clone;
-  let activeImage = null;
-  let originalRect = null;
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  function openModal(img) {
-    activeImage = img;
-    originalRect = img.getBoundingClientRect();
-    const body = document.body;
+/* Fetch images */
+async function fetchGalleryImages(gallery) {
+  const { data, error } = await supabase
+    .from("images")
+    .select("*")
+    .eq("gallery", gallery)
+    .order("sort_order", { ascending: true });
 
-    if (modal.classList.contains('active')) return;
-
-    // Create zoom clone
-    clone = img.cloneNode();
-    Object.assign(clone.style, {
-      position: 'fixed',
-      left: originalRect.left + 'px',
-      top: originalRect.top + 'px',
-      width: originalRect.width + 'px',
-      height: originalRect.height + 'px',
-      borderRadius: getComputedStyle(img).borderRadius,
-      objectFit: 'cover',
-      transition: 'all 0.45s cubic-bezier(0.23, 1, 0.32, 1)',
-      zIndex: '10000',
-      boxShadow: '0 0 30px rgba(0,0,0,0.6)',
-    });
-    body.appendChild(clone);
-
-    // Trigger animation
-    void clone.offsetWidth;
-
-    const targetW = Math.min(window.innerWidth * 0.8, 1000);
-    const targetH = Math.min(window.innerHeight * 0.8, targetW * (img.naturalHeight / img.naturalWidth));
-    const targetL = (window.innerWidth - targetW) / 2;
-    const targetT = (window.innerHeight - targetH) / 2;
-
-    modal.classList.add('active');
-    Object.assign(clone.style, {
-      left: targetL + 'px',
-      top: targetT + 'px',
-      width: targetW + 'px',
-      height: targetH + 'px',
-      borderRadius: '12px',
-    });
-
-    // After zoom finishes, fade in modal image
-    setTimeout(() => {
-      modalImg.src = img.dataset.src || img.src;
-      modalImg.onload = () => modalImg.classList.add('visible');
-      clone.remove();
-      body.style.overflow = 'hidden';
-    }, 450);
+  if (error) {
+    console.error("Error loading gallery:", error);
+    return [];
   }
 
-  function closeModal() {
-    if (!activeImage || !modal.classList.contains('active')) return;
+  return data;
+}
 
-    const body = document.body;
-    const imgRect = modalImg.getBoundingClientRect();
-    const reverse = modalImg.cloneNode();
+/* Render gallery */
+async function renderGallery() {
+  const container = document.getElementById("fccm-gallery");
+  const images = await fetchGalleryImages("fccm");
 
-    Object.assign(reverse.style, {
-      position: 'fixed',
-      left: imgRect.left + 'px',
-      top: imgRect.top + 'px',
-      width: imgRect.width + 'px',
-      height: imgRect.height + 'px',
-      borderRadius: '12px',
-      transition: 'all 0.45s cubic-bezier(0.23, 1, 0.32, 1)',
-      zIndex: '10000',
-      boxShadow: '0 0 30px rgba(0,0,0,0.6)',
+  container.innerHTML = images.map(img => `
+    <div class="card bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition-all duration-300"
+         data-src="${img.image_url}">
+      <div style="aspect-ratio: 3/2;" class="w-full">
+        <img src="${img.image_url}" class="w-full h-full object-cover">
+      </div>
+    </div>
+  `).join("");
+
+  initZoomModal();
+}
+
+/* Zoom modal logic */
+function initZoomModal() {
+  const modal = document.getElementById("image-modal");
+  const modalImg = document.getElementById("modal-img");
+  const closeBtn = document.getElementById("close-modal");
+
+  let activeImg = null;
+
+  document.querySelectorAll(".card img").forEach(img => {
+    img.addEventListener("click", () => {
+      activeImg = img;
+
+      const rect = img.getBoundingClientRect();
+      const clone = img.cloneNode();
+      clone.classList.add("zoom-clone");
+
+      Object.assign(clone.style, {
+        position: "fixed",
+        top: rect.top + "px",
+        left: rect.left + "px",
+        width: rect.width + "px",
+        height: rect.height + "px",
+        borderRadius: "12px",
+        objectFit: "cover",
+        zIndex: "99999",
+        transition: "all .45s cubic-bezier(0.23,1,0.32,1)"
+      });
+
+      document.body.appendChild(clone);
+
+      // Animate into center
+      setTimeout(() => {
+        const targetW = Math.min(window.innerWidth * 1, 1100);
+        const targetH = targetW * 0.6667; // Assuming 3:2 aspect ratio
+        const targetL = (window.innerWidth - targetW) / 2;
+        const targetT = (window.innerHeight - targetH) / 2;
+
+        Object.assign(clone.style, {
+          top: targetT + "px",
+          left: targetL + "px",
+          width: targetW + "px",
+          height: targetH + "px"
+        });
+
+        modal.classList.remove("hidden");
+
+        setTimeout(() => {
+          modalImg.src = img.src;
+          clone.remove();
+          document.body.style.overflow = "hidden";
+        }, 450);
+      }, 10);
     });
-
-    body.appendChild(reverse);
-
-    // Hide modal while reverse clone animates
-    modalImg.classList.remove('visible');
-
-    // Animate overlay fade slightly delayed for cinematic feel
-    setTimeout(() => modal.classList.remove('active'), 100);
-
-    const endRect = activeImage.getBoundingClientRect();
-    Object.assign(reverse.style, {
-      left: endRect.left + 'px',
-      top: endRect.top + 'px',
-      width: endRect.width + 'px',
-      height: endRect.height + 'px',
-      borderRadius: getComputedStyle(activeImage).borderRadius,
-    });
-
-    setTimeout(() => {
-      reverse.remove();
-      modalImg.src = '';
-      body.style.overflow = '';
-      activeImage = null;
-    }, 450);
-  }
-
-  // Event bindings
-  cards.forEach(card => {
-    const img = card.querySelector('img');
-    if (!img) return;
-    card.addEventListener('click', () => openModal(img));
   });
 
-  closeBtn.addEventListener('click', closeModal);
-  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-  window.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-})();
+  /* Close modal */
+  function closeModal() {
+    modal.classList.add("hidden");
+    modalImg.src = "";
+    document.body.style.overflow = "";
+
+    document.querySelectorAll(".zoom-clone").forEach(c => c.remove());
+    activeImg = null;
+  }
+
+  closeBtn.addEventListener("click", closeModal);
+  modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+}
+
+/* Start */
+document.addEventListener("DOMContentLoaded", renderGallery);
 </script>
-    <section class="relative left-1/2 transform -translate-x-1/2 w-screen flex justify-center mt-16 mb-10">  
-        <a href="#" class="transform hover:scale-105 inline-block bg-gray-800 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full transition-all duration-300">Back To Top</a>
-    </section>
+
 </body>
-    <footer class="bg-gray-800 text-center py-6 mt-10">
-      <p>&copy; 2025 Stuart Clarkson Photography. All rights reserved.</p>
-    </footer>
 </html>
