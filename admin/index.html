@@ -25,13 +25,15 @@
 
   <!-- MAIN WRAPPER -->
   <div class="flex-1 p-3">
-<header class="flex justify-between items-center p-5">
-    <a href="https://stuartclarksonphotography.com" class="text-3xl font-bold">Stuart Clarkson</a>
-  </header>
+    <header class="flex justify-between items-center p-5">
+      <a href="https://stuartclarksonphotography.com" class="text-3xl font-bold">
+        Stuart Clarkson
+      </a>
+    </header>
 
-  <!-- LOGIN -->
-  <div id="loginSection" class="text-center max-w-lg mx-auto mt-10">
-    <h1 class="text-3xl font-bold mb-4">Admin Login</h1>
+    <!-- LOGIN -->
+    <div id="loginSection" class="text-center max-w-lg mx-auto mt-10">
+      <h1 class="text-3xl font-bold mb-4">Admin Login</h1>
 
       <input
         id="passwordInput"
@@ -64,7 +66,7 @@
 
         <form id="uploadForm" class="space-y-4">
 
-          <!-- NEW: Gallery dropdown + manual gallery -->
+          <!-- Gallery dropdown + manual gallery -->
           <div>
             <label class="block mb-1 font-semibold">Select Existing Gallery</label>
             <select id="galleryDropdown"
@@ -120,6 +122,17 @@
       <div class="max-w-5xl mx-auto bg-gray-800 mt-14 p-6 rounded-xl shadow-xl">
         <h2 class="text-3xl font-bold mb-6 text-center">Delete Images</h2>
 
+        <!-- Gallery filter for delete table -->
+        <div class="flex justify-end items-center mb-4 text-sm">
+          <label for="deleteGalleryFilter" class="mr-2 text-gray-300">Gallery:</label>
+          <select
+            id="deleteGalleryFilter"
+            class="px-3 py-1 rounded-lg bg-gray-700 text-gray-100 border border-gray-600"
+          >
+            <!-- options filled by JS -->
+          </select>
+        </div>
+
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm md:text-base">
             <thead>
@@ -165,53 +178,54 @@
       SUPABASE_URL,
       SUPABASE_ANON_KEY
     );
+
     const GALLERY_STORAGE_KEY = "scp_admin_last_gallery";
 
     /************************************************
-     * LOAD GALLERIES INTO DROPDOWN
+     * LOAD GALLERIES INTO DROPDOWN (UPLOAD)
      ***********************************************/
     async function loadGalleryList() {
-    const dropdown = document.getElementById("galleryDropdown");
-    dropdown.innerHTML = `<option>Loading...</option>`;
+      const dropdown = document.getElementById("galleryDropdown");
+      dropdown.innerHTML = `<option>Loading...</option>`;
 
-    const { data, error } = await supabase
-      .from("images")
-      .select("gallery")
-      .order("gallery", { ascending: true });
+      const { data, error } = await supabase
+        .from("images")
+        .select("gallery")
+        .order("gallery", { ascending: true });
 
-    if (error) {
-      console.error("Error loading galleries:", error);
-      dropdown.innerHTML = `<option value="">Error loading galleries</option>`;
-      return;
-    }
+      if (error) {
+        console.error("Error loading galleries:", error);
+        dropdown.innerHTML = `<option value="">Error loading galleries</option>`;
+        return;
+      }
 
-    // Unique gallery names
-    const unique = [...new Set(data.map(x => x.gallery).filter(Boolean))];
+      // Unique gallery names
+      const unique = [...new Set(data.map(x => x.gallery).filter(Boolean))];
 
-    if (unique.length === 0) {
-      dropdown.innerHTML = `<option value="">No galleries yet</option>`;
-      return;
-    }
+      if (unique.length === 0) {
+        dropdown.innerHTML = `<option value="">No galleries yet</option>`;
+        return;
+      }
 
-    dropdown.innerHTML = `<option value="">-- Select gallery --</option>`;
+      dropdown.innerHTML = `<option value="">-- Select gallery --</option>`;
 
-    unique.forEach(g => {
-      dropdown.innerHTML += `<option value="${g}">${g}</option>`;
-    });
+      unique.forEach(g => {
+        dropdown.innerHTML += `<option value="${g}">${g}</option>`;
+      });
 
-    dropdown.innerHTML += `<option value="__new__">➕ Create New Gallery</option>`;
+      dropdown.innerHTML += `<option value="__new__">➕ Create New Gallery</option>`;
 
-    // 🔹 Restore last selected gallery if it still exists
-    const lastGallery = localStorage.getItem(GALLERY_STORAGE_KEY);
-    if (lastGallery) {
-      const optionExists = Array.from(dropdown.options).some(
-        opt => opt.value === lastGallery
-      );
-      if (optionExists) {
-        dropdown.value = lastGallery;
+      // Restore last selected gallery if it still exists
+      const lastGallery = localStorage.getItem(GALLERY_STORAGE_KEY);
+      if (lastGallery) {
+        const optionExists = Array.from(dropdown.options).some(
+          opt => opt.value === lastGallery
+        );
+        if (optionExists) {
+          dropdown.value = lastGallery;
+        }
       }
     }
-  }
 
     /************************************************
      * LOGIN HANDLER
@@ -258,11 +272,10 @@
           return;
         }
 
-
+        // Success
         loginSection.classList.add("hidden");
         adminPanel.classList.remove("hidden");
         loginError.classList.add("hidden");
-
 
         await loadGalleryList();
         await loadDeleteTable();
@@ -284,15 +297,6 @@
     const previewImage = document.getElementById("previewImage");
     const imageUrlEl = document.getElementById("imageUrl");
     const galleryDropdown = document.getElementById("galleryDropdown");
-    galleryDropdown.addEventListener("change", () => {
-    const value = galleryDropdown.value;
-    if (value) {
-      localStorage.setItem(GALLERY_STORAGE_KEY, value);
-    } else {
-      localStorage.removeItem(GALLERY_STORAGE_KEY);
-    }
-  });
-
 
     uploadForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -317,12 +321,10 @@
         return;
       }
 
-
       const formData = new FormData();
       formData.append("gallery", gallery);
       formData.append("title", title);
       formData.append("image", file);
-
 
       try {
         const res = await fetch(UPLOAD_FUNCTION_URL, {
@@ -340,10 +342,11 @@
           alert("Upload failed: " + (data.error || "Unknown error"));
           return;
         }
-       
+
+        // Remember last gallery
         localStorage.setItem(GALLERY_STORAGE_KEY, gallery);
 
-
+        // Show preview
         previewSection.classList.remove("hidden");
         previewImage.src = data.url;
         imageUrlEl.textContent = data.url;
@@ -360,24 +363,84 @@
     });
 
     /************************************************
-     * LOAD DELETE TABLE
+     * DELETE TABLE STATE
+     ***********************************************/
+    const deleteGalleryFilter = document.getElementById("deleteGalleryFilter");
+    let deleteImagesCache = [];
+
+    if (deleteGalleryFilter) {
+      deleteGalleryFilter.addEventListener("change", () => {
+        renderDeleteTable();
+      });
+    }
+
+    function updateDeleteGalleryFilterOptions() {
+      if (!deleteGalleryFilter) return;
+
+      const prev = deleteGalleryFilter.value || "";
+
+      const galleries = [
+        ...new Set(deleteImagesCache.map((img) => img.gallery).filter(Boolean)),
+      ].sort((a, b) => a.localeCompare(b));
+
+      deleteGalleryFilter.innerHTML = "";
+
+      const optAll = document.createElement("option");
+      optAll.value = "";
+      optAll.textContent = "All galleries";
+      deleteGalleryFilter.appendChild(optAll);
+
+      galleries.forEach((g) => {
+        const opt = document.createElement("option");
+        opt.value = g;
+        opt.textContent = g;
+        deleteGalleryFilter.appendChild(opt);
+      });
+
+      // restore previous selection if still present
+      if (prev && galleries.includes(prev)) {
+        deleteGalleryFilter.value = prev;
+      } else {
+        deleteGalleryFilter.value = "";
+      }
+    }
+
+    /************************************************
+     * LOAD DELETE TABLE (SORT BY GALLERY)
      ***********************************************/
     async function loadDeleteTable() {
       console.log("Loading delete table...");
+
       const { data: images, error } = await supabase
         .from("images")
         .select("*")
-        .order("sort_order", { ascending: true });
+        .order("gallery", { ascending: true })
+        .order("id", { ascending: true }); // secondary sort by ID
 
       if (error) {
         console.error("Error loading images:", error);
         return;
       }
 
+      deleteImagesCache = images || [];
+      updateDeleteGalleryFilterOptions();
+      renderDeleteTable();
+    }
+
+    function renderDeleteTable() {
       const tbody = document.getElementById("deleteTable");
+      if (!tbody) return;
+
+      let rows = deleteImagesCache;
+
+      const galleryFilterValue = deleteGalleryFilter ? deleteGalleryFilter.value : "";
+      if (galleryFilterValue) {
+        rows = rows.filter((img) => img.gallery === galleryFilterValue);
+      }
+
       tbody.innerHTML = "";
 
-      if (!images || images.length === 0) {
+      if (!rows || rows.length === 0) {
         const emptyRow = document.createElement("tr");
         emptyRow.innerHTML =
           '<td colspan="5" class="p-4 text-center text-gray-400">No images found.</td>';
@@ -385,7 +448,7 @@
         return;
       }
 
-      images.forEach((img) => {
+      rows.forEach((img) => {
         const storagePath = img.image_url.split("/object/public/images/")[1];
 
         const tr = document.createElement("tr");
