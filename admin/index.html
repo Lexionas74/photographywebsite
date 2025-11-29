@@ -162,41 +162,53 @@
       SUPABASE_URL,
       SUPABASE_ANON_KEY
     );
+    const GALLERY_STORAGE_KEY = "scp_admin_last_gallery";
 
     /************************************************
      * LOAD GALLERIES INTO DROPDOWN
      ***********************************************/
     async function loadGalleryList() {
-      const dropdown = document.getElementById("galleryDropdown");
-      dropdown.innerHTML = `<option>Loading...</option>`;
+    const dropdown = document.getElementById("galleryDropdown");
+    dropdown.innerHTML = `<option>Loading...</option>`;
 
-      const { data, error } = await supabase
-        .from("images")
-        .select("gallery")
-        .order("gallery", { ascending: true });
+    const { data, error } = await supabase
+      .from("images")
+      .select("gallery")
+      .order("gallery", { ascending: true });
 
-      if (error) {
-        console.error("Error loading galleries:", error);
-        dropdown.innerHTML = `<option value="">Error loading galleries</option>`;
-        return;
-      }
-
-      // Unique gallery names
-      const unique = [...new Set(data.map(x => x.gallery).filter(Boolean))];
-
-      if (unique.length === 0) {
-        dropdown.innerHTML = `<option value="">No galleries yet</option>`;
-        return;
-      }
-
-      dropdown.innerHTML = `<option value="">-- Select gallery --</option>`;
-
-      unique.forEach(g => {
-        dropdown.innerHTML += `<option value="${g}">${g}</option>`;
-      });
-
-      dropdown.innerHTML += `<option value="__new__">➕ Create New Gallery</option>`;
+    if (error) {
+      console.error("Error loading galleries:", error);
+      dropdown.innerHTML = `<option value="">Error loading galleries</option>`;
+      return;
     }
+
+    // Unique gallery names
+    const unique = [...new Set(data.map(x => x.gallery).filter(Boolean))];
+
+    if (unique.length === 0) {
+      dropdown.innerHTML = `<option value="">No galleries yet</option>`;
+      return;
+    }
+
+    dropdown.innerHTML = `<option value="">-- Select gallery --</option>`;
+
+    unique.forEach(g => {
+      dropdown.innerHTML += `<option value="${g}">${g}</option>`;
+    });
+
+    dropdown.innerHTML += `<option value="__new__">➕ Create New Gallery</option>`;
+
+    // 🔹 Restore last selected gallery if it still exists
+    const lastGallery = localStorage.getItem(GALLERY_STORAGE_KEY);
+    if (lastGallery) {
+      const optionExists = Array.from(dropdown.options).some(
+        opt => opt.value === lastGallery
+      );
+      if (optionExists) {
+        dropdown.value = lastGallery;
+      }
+    }
+  }
 
     /************************************************
      * LOGIN HANDLER
@@ -243,12 +255,12 @@
           return;
         }
 
-        // SUCCESS
+
         loginSection.classList.add("hidden");
         adminPanel.classList.remove("hidden");
         loginError.classList.add("hidden");
 
-        // 🔹 Load galleries + images once logged in
+
         await loadGalleryList();
         await loadDeleteTable();
       } catch (err) {
@@ -269,11 +281,19 @@
     const previewImage = document.getElementById("previewImage");
     const imageUrlEl = document.getElementById("imageUrl");
     const galleryDropdown = document.getElementById("galleryDropdown");
+    galleryDropdown.addEventListener("change", () => {
+    const value = galleryDropdown.value;
+    if (value) {
+      localStorage.setItem(GALLERY_STORAGE_KEY, value);
+    } else {
+      localStorage.removeItem(GALLERY_STORAGE_KEY);
+    }
+  });
+
 
     uploadForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      // ✅ New gallery selection logic
       let gallery = galleryDropdown.value;
       const manualGallery = galleryInput.value.trim();
 
@@ -305,7 +325,7 @@
         const res = await fetch(UPLOAD_FUNCTION_URL, {
           method: "POST",
           headers: {
-            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`, // DO NOT set Content-Type with FormData
+            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
           },
           body: formData,
         });
@@ -317,17 +337,17 @@
           alert("Upload failed: " + (data.error || "Unknown error"));
           return;
         }
+       
+        localStorage.setItem(GALLERY_STORAGE_KEY, gallery);
 
-        // Show preview
+
         previewSection.classList.remove("hidden");
         previewImage.src = data.url;
         imageUrlEl.textContent = data.url;
 
-        // Clear file input
         fileInput.value = "";
         titleInput.value = "";
 
-        // Reload table (and dropdown if new gallery was created)
         await loadDeleteTable();
         await loadGalleryList();
       } catch (err) {
