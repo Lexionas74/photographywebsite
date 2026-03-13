@@ -8,7 +8,6 @@
   <!-- Tailwind + Supabase JS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <link
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
     rel="stylesheet"
@@ -44,9 +43,7 @@
 
       <button
         id="loginButton"
-        class="ml-3 bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-      >
-        Login
+        class="ml-3 bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition">Login
       </button>
 
       <p
@@ -123,13 +120,26 @@
         <h2 class="text-3xl font-bold mb-6 text-center">Delete Images</h2>
 
         <!-- Gallery filter for delete table -->
-        <div class="flex justify-end items-center mb-4 text-sm">
-          <label for="deleteGalleryFilter" class="mr-2 text-gray-300">Gallery:</label>
+        <div class="flex justify-end items-center gap-3 mb-4 text-sm flex-wrap">
+          <label for="deleteGalleryFilter" class="text-gray-300">Gallery:</label>
           <select
             id="deleteGalleryFilter"
             class="px-3 py-1 rounded-lg bg-gray-700 text-gray-100 border border-gray-600"
           >
             <!-- options filled by JS -->
+          </select>
+
+          <label for="deleteSortBy" class="text-gray-300">Sort By:</label>
+          <select
+            id="deleteSortBy"
+            class="px-3 py-1 rounded-lg bg-gray-700 text-gray-100 border border-gray-600"
+          >
+            <option value="gallery_asc">Gallery (A-Z)</option>
+            <option value="gallery_desc">Gallery (Z-A)</option>
+            <option value="id_desc">Newest First</option>
+            <option value="id_asc">Oldest First</option>
+            <option value="id_asc">ID (Lowest to Highest)</option>
+            <option value="id_desc">ID (Highest to Lowest)</option>
           </select>
         </div>
 
@@ -154,7 +164,7 @@
   <!-- FOOTER -->
   <footer class="bg-gray-800 text-center py-4 mt-10">
     <p class="text-sm text-gray-400">
-      &copy; 2025 Stuart Clarkson Photography. Admin Panel.
+      &copy; 2026 Stuart Clarkson Photography. Admin Panel.
     </p>
   </footer>
 
@@ -173,8 +183,7 @@
       "https://ygnfuztbwsngjihrinlr.functions.supabase.co/upload";
     const DELETE_FUNCTION_URL =
       "https://ygnfuztbwsngjihrinlr.functions.supabase.co/delete";
-
-    const supabase = window.supabase.createClient(
+    const supabaseClient = window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_ANON_KEY
     );
@@ -188,7 +197,7 @@
       const dropdown = document.getElementById("galleryDropdown");
       dropdown.innerHTML = `<option>Loading...</option>`;
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from("images")
         .select("gallery")
         .order("gallery", { ascending: true });
@@ -366,10 +375,17 @@
      * DELETE TABLE STATE
      ***********************************************/
     const deleteGalleryFilter = document.getElementById("deleteGalleryFilter");
+    const deleteSortBy = document.getElementById("deleteSortBy");
     let deleteImagesCache = [];
 
     if (deleteGalleryFilter) {
       deleteGalleryFilter.addEventListener("change", () => {
+        renderDeleteTable();
+      });
+    }
+
+    if (deleteSortBy) {
+      deleteSortBy.addEventListener("change", () => {
         renderDeleteTable();
       });
     }
@@ -387,7 +403,7 @@
 
       const optAll = document.createElement("option");
       optAll.value = "";
-      optAll.textContent = "All galleries";
+      optAll.textContent = "All Galleries";
       deleteGalleryFilter.appendChild(optAll);
 
       galleries.forEach((g) => {
@@ -411,7 +427,7 @@
     async function loadDeleteTable() {
       console.log("Loading delete table...");
 
-      const { data: images, error } = await supabase
+      const { data: images, error } = await supabaseClient
         .from("images")
         .select("*")
         .order("gallery", { ascending: true })
@@ -437,6 +453,24 @@
       if (galleryFilterValue) {
         rows = rows.filter((img) => img.gallery === galleryFilterValue);
       }
+
+      const sortValue = deleteSortBy ? deleteSortBy.value : "gallery_asc";
+      rows = [...rows].sort((a, b) => {
+        const galleryA = (a.gallery || "").toLowerCase();
+        const galleryB = (b.gallery || "").toLowerCase();
+
+        if (sortValue === "gallery_desc") {
+          return galleryB.localeCompare(galleryA) || a.id - b.id;
+        }
+        if (sortValue === "id_desc") {
+          return b.id - a.id;
+        }
+        if (sortValue === "id_asc") {
+          return a.id - b.id;
+        }
+
+        return galleryA.localeCompare(galleryB) || a.id - b.id;
+      });
 
       tbody.innerHTML = "";
 
