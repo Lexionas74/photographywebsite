@@ -59,7 +59,7 @@
 
  <!-- Gallery -->
 <main class="flex justify-center items-center min-h-screen">
-  <div id="gtwc2025-gallery"
+  <div id="ausgp2026-gallery"
        class="grid grid-cols-1 md:grid-cols-3 gap-3 p-10 max-w-[1500px]">
   </div>
 </main>
@@ -100,8 +100,8 @@ async function fetchGalleryImages(gallery) {
 
 /* Render gallery */
 async function renderGallery() {
-  const container = document.getElementById("gtwc2025-gallery");
-  const images = await fetchGalleryImages("gtwc2025");
+  const container = document.getElementById("ausgp2026-gallery");
+  const images = await fetchGalleryImages("ausgp2026");
 
   container.innerHTML = images.map(img => `
     <div class="card bg-gray-800 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition-all duration-300"
